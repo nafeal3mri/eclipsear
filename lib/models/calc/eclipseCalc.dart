@@ -895,15 +895,15 @@ class CalculateSolarEclipse {
         // getdate(el, mid);
         if (mid[39] == 1) {
           //P
-          ecType = 'Partial Eclipse';
+          ecType = 'partialEclipse';
           //Partial Eclipse
         } else if (mid[39] == 2) {
           //A
-          ecType = 'Annular Eclipse';
+          ecType = 'annularEclipse';
           //annular Eclipse
         } else {
           //T
-          ecType = 'Total Eclipse';
+          ecType = 'totalEclipse';
           //Total Eclipse
         }
         // Partial eclipse start
@@ -971,7 +971,7 @@ class CalculateSolarEclipse {
             {
               'date': getdate(el, mid),
               'Time': '--:--:--',
-              'Type': 'Not in your location',
+              'Type': 'notVisible',
               'maxEclipse': gettime(el, mid),
               'peEnd': '--:--:--',
               'eclipseMg': getmagnitude(),

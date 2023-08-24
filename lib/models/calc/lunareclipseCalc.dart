@@ -320,13 +320,13 @@ class CalculateLunarEclipse {
           // Eclipse Type
           if (el[5 + i.toInt()] == 1) {
             //Total
-            ecType = 'Total Eclipse';
+            ecType = 'totalEclipse';
           } else if (el[5 + i.toInt()] == 2) {
             //Partial
-            ecType = 'Partial Eclipse';
+            ecType = 'partialEclipse';
           } else {
             //Penumbral
-            ecType = 'Penumbral Eclipse';
+            ecType = 'penumbralEclipse';
           }
 
           // Pen. Mag
@@ -391,7 +391,7 @@ class CalculateLunarEclipse {
             {
               'date': getdate(el, mid),
               'Time': gettime(el, p1),
-              'Type': 'Not Visible',
+              'Type': 'notVisible',
               'maxEclipse': gettime(el, mid),
               'peEnd': gettime(el, p4),
               'DateTime': getdate(el, mid) + " " + gettime(el, mid)

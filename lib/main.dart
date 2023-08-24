@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:eclipsear/const/app_bar.dart';
@@ -10,24 +12,90 @@ import 'package:eclipsear/models/countDownTimer.dart';
 import 'package:eclipsear/models/eclipseTypeIcon.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  // duringSplash() {
+  //   if (!prefs.containsKey('latitude')) {
+  //     return 2;
+  //   } else {
+  //     // print(prefs.getDouble('latitude'));
+  //     return 1;
+  //   }
+  // }
+
+  Locale userlanguage;
+
+  if (prefs.containsKey('language')) {
+    userlanguage = Locale(prefs.getString('language') ?? "en");
+  } else {
+    userlanguage = Locale(Platform.localeName.toString() == 'ar' ||
+            Platform.localeName.toString() == 'en'
+        ? Platform.localeName.toString()
+        : "en");
+  }
+  // print(userlanguage);
+
+  // Map<int, Widget> op = {1: MyApp(};
+  runApp(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MyApp(userlanguage: userlanguage)));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  const MyApp({super.key, required this.userlanguage});
+  final Locale userlanguage;
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+  static _MyAppState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>();
+}
+
+class _MyAppState extends State<MyApp> {
+  late Locale _locale;
+  @override
+  void initState() {
+    // print(widget.eclipsesDataList);
+    setState(() {
+      _locale = widget.userlanguage;
+    });
+    super.initState();
+  }
+
+  void setLocale(Locale value) {
+    setState(() {
+      _locale = value;
+    });
+  }
+
+  late final Locale userlanguage;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Eclipsear',
+      locale: _locale,
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('ar'), // Arabic
+        Locale('en'), // English
+      ],
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'EclipseAR'),
     );
   }
 }
@@ -36,7 +104,9 @@ class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
+  static _MyHomePageState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyHomePageState>();
 }
 
 class _MyHomePageState extends State<MyHomePage>
@@ -56,6 +126,8 @@ class _MyHomePageState extends State<MyHomePage>
   late var _selectedYearData;
   late TabController _controller;
   var _annual_list;
+  late SharedPreferences prefs;
+  bool is_loading = true;
 
   @override
   void initState() {
@@ -66,10 +138,8 @@ class _MyHomePageState extends State<MyHomePage>
       setState(() {});
     });
     // iosnotificationpermission();
-    // getEclipseData();
     // getLunarEclipseData();
     getEclipseData();
-    _selectedYearData = databyyear("", _yearActive);
   }
 
   @override
@@ -86,11 +156,9 @@ class _MyHomePageState extends State<MyHomePage>
           elevation: 0,
           backgroundColor: AppColors.darkbrown,
           title: CustomAppBar(
-            pageTitle: 'EclipseAR',
-            viewLogo: true,
-          ),
+              pageTitle: 'EclipseAR', viewLogo: true, viewLocation: true),
         ),
-        body: homePageContent());
+        body: is_loading ? Container() : homePageContent());
   }
 
   Widget homePageContent() {
@@ -132,14 +200,14 @@ class _MyHomePageState extends State<MyHomePage>
                 radius: 50,
                 labelStyle:
                     TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                tabs: const [
+                tabs: [
                   Tab(
                     // icon: Icon(Icons.directions_car),
-                    text: "Solar Eclipse",
+                    text: AppLocalizations.of(context)!.solarEclipse,
                   ),
                   Tab(
                     // icon: Icon(Icons.directions_car),
-                    text: "Lunar Eclipse",
+                    text: AppLocalizations.of(context)!.lunarEclipse,
                   ),
                 ],
               ),
@@ -207,6 +275,7 @@ class _MyHomePageState extends State<MyHomePage>
 
   Widget pageContent() {
     // var listingec = databyyear("", _yearActive);
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.5,
       width: MediaQuery.of(context).size.width * 0.95,
@@ -215,92 +284,122 @@ class _MyHomePageState extends State<MyHomePage>
           itemBuilder: (BuildContext context, int index) {
             // print([0]);
             var listingec = _annual_list[index];
-            return Container(
-              width: MediaQuery.of(context).size.width * 0.95,
-              height: MediaQuery.of(context).size.height * 0.1,
-              margin: EdgeInsets.only(
-                top: MediaQuery.of(context).size.height * 0.01,
-                bottom: MediaQuery.of(context).size.height * 0.01,
-              ),
-              padding: EdgeInsets.only(
-                top: MediaQuery.of(context).size.height * 0.01,
-                bottom: MediaQuery.of(context).size.height * 0.01,
-                left: MediaQuery.of(context).size.width * 0.05,
-                right: MediaQuery.of(context).size.width * 0.05,
-              ),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  color: selectdEclipseData['date'] == listingec['date'] ||
-                          selectdLunEclipseData['date'] == listingec['date']
-                      ? AppColors.lightbrown15
-                      : AppColors.lightbrown10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
+            return InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EclipseDetailsPage(
+                              title: 
+                              // AppLocalizations.of(context)!.eclipseType(
+                              //         (_controller.index == 0
+                              //                 ? "solar"
+                              //                 : "lunar") +
+                              //             listingec['Type']) +
+                              //     ' ' +
+                              
+                                  // listingec['date'],
+                                  getdatetimgformatted(false,listingec['date']),
+                              eclipseData: listingec,
+                              eclipseType:
+                                  _controller.index == 0 ? "solar" : "lunar")));
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.95,
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  margin: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.01,
+                    bottom: MediaQuery.of(context).size.height * 0.01,
+                  ),
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.01,
+                    bottom: MediaQuery.of(context).size.height * 0.01,
+                    left: MediaQuery.of(context).size.width * 0.05,
+                    right: MediaQuery.of(context).size.width * 0.05,
+                  ),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: selectdEclipseData['date'] == listingec['date'] ||
+                              selectdLunEclipseData['date'] == listingec['date']
+                          ? AppColors.lightbrown15
+                          : AppColors.lightbrown10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Image.asset(
-                        EclipseIcon().getimageFromVar(
-                            listingec['Type'],
-                            listingec['eclipseMg'],
-                            _controller.index == 0 ? "solar" : "lunar"),
-                        width: 50,
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.05,
+                      Row(
+                        children: [
+                          Image.asset(
+                            EclipseIcon().getimageFromVar(
+                                listingec['Type'],
+                                listingec['eclipseMg'],
+                                _controller.index == 0 ? "solar" : "lunar"),
+                            width: 50,
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.05,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AutoSizeText(
+                                // listingec['Type'],
+                                AppLocalizations.of(context)!.eclipseType(
+                                    (_controller.index == 0
+                                            ? "solar"
+                                            : "lunar") +
+                                        listingec['Type']),
+                                style: TextStyle(color: Colors.white),
+                                maxLines: 1,
+                                maxFontSize: 22,
+                              ),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.width * 0.01,
+                              ),
+                              Text(
+                                listingec['date'],
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AutoSizeText(
-                            listingec['Type'],
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                            maxLines: 1,
-                            maxFontSize: 22,
+                          Text(
+                            listingec['Time'] != '--:--:--'
+                                ? AppLocalizations.of(context)!.start +
+                                    ": ${listingec['Time']}"
+                                : '',
+                            style: TextStyle(fontSize: 14, color: Colors.white),
                           ),
                           SizedBox(
                             height: MediaQuery.of(context).size.width * 0.01,
                           ),
                           Text(
-                            listingec['date'],
+                            AppLocalizations.of(context)!.max +
+                                ":  ${listingec['maxEclipse']}",
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.width * 0.01,
+                          ),
+                          Text(
+                            listingec['peEnd'] != '--:--:--'
+                                ? AppLocalizations.of(context)!.end +
+                                    ":   ${listingec['peEnd']}"
+                                : '',
                             style: TextStyle(fontSize: 14, color: Colors.white),
                           ),
                         ],
-                      ),
+                      )
                     ],
                   ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        listingec['Time'] != '--:--:--'
-                            ? "Start: ${listingec['Time']}"
-                            : '',
-                        style: TextStyle(fontSize: 14, color: Colors.white),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.width * 0.01,
-                      ),
-                      Text(
-                        "Max:  ${listingec['maxEclipse']}",
-                        style: TextStyle(fontSize: 14, color: Colors.white),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.width * 0.01,
-                      ),
-                      Text(
-                        listingec['peEnd'] != '--:--:--'
-                            ? "End:   ${listingec['peEnd']}"
-                            : '',
-                        style: TextStyle(fontSize: 14, color: Colors.white),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            );
+                ));
           }),
     );
   }
@@ -327,8 +426,6 @@ class _MyHomePageState extends State<MyHomePage>
     } else {
       _tabdata = selectdLunEclipseData;
     }
-    // print(selectdEclipseData);
-
     return Container(
         width: MediaQuery.of(context).size.width,
         margin: EdgeInsets.only(
@@ -353,7 +450,9 @@ class _MyHomePageState extends State<MyHomePage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AutoSizeText(
-                      _tabdata['Type'],
+                      AppLocalizations.of(context)!.eclipseType(
+                          (_controller.index == 0 ? "solar" : "lunar") +
+                              _tabdata['Type']),
                       style: TextStyle(color: Colors.white, fontSize: 18),
                       maxLines: 1,
                     ),
@@ -374,10 +473,10 @@ class _MyHomePageState extends State<MyHomePage>
                         context,
                         MaterialPageRoute(
                             builder: (context) => EclipseDetailsPage(
-                                  title: "Eclipse",
-                                  eclipseData: getSelectedEclipseArray(eclipseType),
-                                  eclipseType: eclipseType
-                                )));
+                                title: getdatetimgformatted(false,_tabdata['date']),
+                                eclipseData:
+                                    getSelectedEclipseArray(eclipseType),
+                                eclipseType: eclipseType)));
                   },
                   style: ElevatedButton.styleFrom(
                     // foregroundColor: AppColors.darkbrown_press,
@@ -393,7 +492,7 @@ class _MyHomePageState extends State<MyHomePage>
                           20.0), // Adjust the border radius as needed
                     ),
                   ),
-                  child: Text('View More'),
+                  child: Text(AppLocalizations.of(context)!.viewMore),
                 )
               ],
             ),
@@ -409,7 +508,7 @@ class _MyHomePageState extends State<MyHomePage>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'start',
+                          AppLocalizations.of(context)!.start,
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                         Text(
@@ -422,7 +521,7 @@ class _MyHomePageState extends State<MyHomePage>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Max',
+                          AppLocalizations.of(context)!.max,
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                         Text(
@@ -435,7 +534,7 @@ class _MyHomePageState extends State<MyHomePage>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'End',
+                          AppLocalizations.of(context)!.end,
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                         Text(
@@ -450,9 +549,9 @@ class _MyHomePageState extends State<MyHomePage>
         ));
   }
 
-  getSelectedEclipseArray(eclipseType){
+  getSelectedEclipseArray(eclipseType) {
     if (eclipseType == "solar") {
-      return  selectdEclipseData;
+      return selectdEclipseData;
     } else {
       return selectdLunEclipseData;
     }
@@ -461,23 +560,21 @@ class _MyHomePageState extends State<MyHomePage>
 // Calcs
 
   getEclipseData() async {
-    // prefs = await SharedPreferences.getInstance();
-    // var latitude = prefs.getDouble('latitude');
-    // var longitude = prefs.getDouble('longitude');
-    // var altitude = prefs.getDouble('altitude');
-    var latitude = 24.8038026;
-    var longitude = 64.7521939;
-    var altitude = 10;
-    // if (ectype == "Solar") {
+    prefs = await SharedPreferences.getInstance();
+    var latitude = prefs.getDouble('latitude') ?? 0;
+    var longitude = prefs.getDouble('longitude') ?? 0;
+    var altitude = prefs.getDouble('altitude') ?? 0;
     var ecdata = calcEclipse.calculatefor(latitude, longitude, altitude);
-    setState(() {
-      eclipseFinalData = ecdata;
-      selectedEclipse('isafter', DateTime.now().toString(), "Solar");
-      // print(ecdata);
-    });
     var ecldata = calcLunEclipse.calculatefor(latitude, longitude, altitude);
-    luneclipseFinalData = ecldata;
+    setState(() {
+      is_loading = false;
+      eclipseFinalData = ecdata;
+      luneclipseFinalData = ecldata;
+    });
+    selectedEclipse('isafter', DateTime.now().toString(), "Solar");
     selectedEclipse('isafter', DateTime.now().toString(), "Lunar");
+    _selectedYearData = databyyear("", _yearActive);
+
     // initWorkMngr();
   }
 
@@ -528,5 +625,12 @@ class _MyHomePageState extends State<MyHomePage>
       });
       return [];
     }
+  }
+
+  getdatetimgformatted(bool isTitle,String myDate){
+    DateTime inputDate = DateFormat("yyyy-MM-dd").parse(myDate);
+    String formattedDate = DateFormat("MMMd yyyy").format(inputDate);
+
+    return formattedDate;
   }
 }

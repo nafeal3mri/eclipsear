@@ -1,0 +1,19 @@
+{
+    "eclipseType": "{eclipseType, select, solarnotVisible{غير ظاهر في منطقتك} solartotalEclipse{كسوف كلي} solarannularEclipse{كسوف حلقي} solarpartialEclipse{كسوف جزئي}lunarnotVisible{غير ظاهر في منطقتك} lunartotalEclipse{خسوف كلي} lunarannularEclipse{خسوف حلقي} lunarpartialEclipse{خسوف جزئي} lunarpenumbralEclipse{خسوف شبه الظل} other{لا يوجد بيانات}}",
+    "days": "يوم",
+    "viewMore": "عرض المزيد",
+    "max": "ذروة الكسوف",
+    "start": "بداية الكسوف",
+    "end": "نهاية الكسوف",
+    "solarEclipse": "كسوف الشمس",
+    "lunarEclipse": "خسوف القمر",
+    "settings": "الاعدادات",
+    "language": "Language",
+    "location": "الموقع",
+    "setLocation": "اختر الموقع",
+    "selectFromMap": "اختر من خريطة",
+    "selectFromList": "اختر من قائمة",
+    "eclipseDetails": "تفاصيل الكسوف",
+    "viewEclipseMap": "استعرض خريطة الكسوف"
+
+}

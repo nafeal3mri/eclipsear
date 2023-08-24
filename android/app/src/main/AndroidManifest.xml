@@ -3,7 +3,9 @@
    <application
         android:label="eclipsear"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyDkK-IsyL7-e80Sq_aUNZmi9imME6IPszw"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -1,8 +1,11 @@
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:eclipsear/const/app_bar.dart';
 import 'package:eclipsear/models/appBackground.dart';
 import 'package:eclipsear/models/countDownTimer.dart';
 import 'package:eclipsear/models/eclipseTypeIcon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'const/app_colors.dart';
 
@@ -22,7 +25,13 @@ class EclipseDetailsPage extends StatefulWidget {
   _EclipseDetailsPageState createState() => _EclipseDetailsPageState();
 }
 
-class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
+class _EclipseDetailsPageState extends State<EclipseDetailsPage>  with SingleTickerProviderStateMixin{
+  late TabController _controller;
+
+  void initState() {
+    super.initState();
+    _controller = TabController(vsync: this, length: 2);
+  }
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -30,8 +39,9 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
           elevation: 0,
           backgroundColor: AppColors.darkbrown,
           title: CustomAppBar(
-            pageTitle: 'Eclipse',
+            pageTitle: widget.title,
             viewLogo: false,
+            viewLocation: true,
           ),
         ),
         body: homePageContent());
@@ -44,7 +54,7 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
         // child: SingleChildScrollView(
         child: AppBGSet(
           topWidget: eclipsePanelWidget(),
-          middleWidget: Center(),
+          middleWidget: buttonTabs(),
           pageContent: Center(),
         ));
   }
@@ -69,15 +79,17 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
                 Image.asset(
                   EclipseIcon().getimageFromVar(widget.eclipseData['Type'],
                       widget.eclipseData['eclipseMg'], widget.eclipseType),
-                  width: 50,
+                  width: 80,
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      widget.eclipseData['Type'],
+                    AutoSizeText(
+                      AppLocalizations.of(context)!.eclipseType(
+                          (widget.eclipseType) + widget.eclipseData['Type']),
                       style: TextStyle(color: Colors.white, fontSize: 18),
+                      maxLines: 1,
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -95,9 +107,9 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
             ),
             Container(
                 margin: EdgeInsets.only(
-                  left: MediaQuery.of(context).size.width * 0.05,
-                  right: MediaQuery.of(context).size.width * 0.05,
-                ),
+                    left: MediaQuery.of(context).size.width * 0.05,
+                    right: MediaQuery.of(context).size.width * 0.05,
+                    top: MediaQuery.of(context).size.height * 0.03),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -105,7 +117,7 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'start',
+                          AppLocalizations.of(context)!.start,
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                         Text(
@@ -118,7 +130,7 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Max',
+                          AppLocalizations.of(context)!.max,
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                         Text(
@@ -131,7 +143,7 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'End',
+                          AppLocalizations.of(context)!.end,
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                         Text(
@@ -144,5 +156,59 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
                 ))
           ],
         ));
+  }
+
+  Widget buttonTabs() {
+    return Container(
+        height: MediaQuery.of(context).size.height*0.1,
+        width: MediaQuery.of(context).size.width * 0.8,
+        child: DefaultTabController(
+        length: 2,
+        child: Column(
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                border: Border.all(
+                  color: Colors.grey,
+                  width: 1,
+                ),
+              ),
+              padding: EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
+              child: ButtonsTabBar(
+                // physics: const NeverScrollableScrollPhysics(),
+                controller: _controller,
+                splashColor: AppColors.darkbrown_press,
+                backgroundColor: AppColors.lightbrown,
+                unselectedBackgroundColor: Colors.transparent,
+                unselectedLabelStyle: TextStyle(color: Colors.white),
+                contentPadding: EdgeInsets.only(right: 25, left: 25),
+                radius: 50,
+                labelStyle:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                tabs: [
+                  Tab(
+                    // icon: Icon(Icons.directions_car),
+                    text: AppLocalizations.of(context)!.solarEclipse,
+                  ),
+                  Tab(
+                    // icon: Icon(Icons.directions_car),
+                    text: AppLocalizations.of(context)!.lunarEclipse,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _controller,
+                children: <Widget>[
+                  Center(),
+                  Center(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),);
   }
 }

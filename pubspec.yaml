@@ -17,9 +17,14 @@ dependencies:
   location: ^5.0.0
   geocoding: ^2.1.0
   auto_size_text: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+  google_maps_flutter: ^2.2.0
+  sliding_up_panel: ^2.0.0+1
+  csc_picker: ^0.2.7
   flutter_localizations:
     sdk: flutter
   intl: any
+  http: ^0.13.6
 
 dev_dependencies:
   flutter_test:
@@ -27,12 +32,19 @@ dev_dependencies:
 
   flutter_lints: ^2.0.0
 
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/elogo.png"
+
 flutter:
   uses-material-design: true
+  generate: true
 
   assets:
     - assets/icons/
     - assets/eclipses/
+    - assets/json/
   # fonts:
   #   - family: Schyler
   #     fonts:

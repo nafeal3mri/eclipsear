@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class CountdownTimer extends StatefulWidget {
   final DateTime targetDate;
@@ -42,7 +44,8 @@ class _CountdownTimerState extends State<CountdownTimer> {
     String hours = twoDigits(duration.inHours.remainder(24));
     String minutes = twoDigits(duration.inMinutes.remainder(60));
     String seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$days days $hours:$minutes:$seconds';
+    String daysSTR = AppLocalizations.of(context)!.days;
+    return '$days $daysSTR $hours:$minutes:$seconds';
   }
 
   @override

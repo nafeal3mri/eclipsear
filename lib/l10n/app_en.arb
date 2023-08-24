@@ -1,0 +1,19 @@
+{
+    "eclipseType": "{eclipseType, select, solarnotVisible{Not visible in your location} solartotalEclipse{Total eclipse} solarannularEclipse{Annular elipse} solarpartialEclipse{Partial eclipse} penumbralEclipse{Penumbral eclipse} lunarnotVisible{Not visible in your location} lunartotalEclipse{Total eclipse} lunarannularEclipse{Annular elipse} lunarpartialEclipse{Partial eclipse} lunarpenumbralEclipse{Penumbral eclipse} other{No data}}",
+    "days": "days",
+    "viewMore": "View More",
+    "max": "Max",
+    "start": "Start",
+    "end": "End",
+    "solarEclipse": "Solar Eclipse",
+    "lunarEclipse": "Lunar Eclipse",
+    "settings": "Settings",
+    "language": "اللغة",
+    "location": "Location",
+    "setLocation": "Set location",
+    "selectFromMap": "Select from Map",
+    "selectFromList": "Select from list",
+    "eclipseDetails": "Eclipse details",
+    "viewEclipseMap": "View eclipse map"
+
+}
