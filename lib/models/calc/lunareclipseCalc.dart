@@ -1,5 +1,7 @@
 ﻿import 'dart:math' as Math;
+import 'package:eclipsear/models/calc/lunarEclipse/LElist.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'lunarEclipse/timeperiod.dart';
 import 'package:location/location.dart';
@@ -25,16 +27,16 @@ class CalculateLunarEclipse {
     "Nov",
     "Dec"
   ];
-  List<double> p1 = List.filled(1000,1000);
-  List<double> u1 = List.filled(1000,1000);
-  List<double> u2 = List.filled(1000,1000);
-  List<double> mid = List.filled(1000,1000);
-  List<double> u3 = List.filled(1000,1000);
-  List<double> u4 = List.filled(1000,1000);
-  List<double> p4 = List.filled(1000,1000);
+  List<double> p1 = List.filled(1000, 1000);
+  List<double> u1 = List.filled(1000, 1000);
+  List<double> u2 = List.filled(1000, 1000);
+  List<double> mid = List.filled(1000, 1000);
+  List<double> u3 = List.filled(1000, 1000);
+  List<double> u4 = List.filled(1000, 1000);
+  List<double> p4 = List.filled(1000, 1000);
   var currenttimeperiod = "";
-  List<double> loadedtimeperiods = List.filled(1000,1000);
-  List<double> obsvconst = List.filled(1000,1000);
+  List<double> loadedtimeperiods = List.filled(1000, 1000);
+  List<double> obsvconst = List.filled(1000, 1000);
   List<Map<String, dynamic>> eclipseDates = [];
 
   // Populate the circumstances array
@@ -382,7 +384,8 @@ class CalculateLunarEclipse {
                 'Type': ecType,
                 'maxEclipse': eMaximum,
                 'peEnd': pEclipseEnd,
-                'DateTime': eDates + " " + eStartTime
+                'DateTime': eDates + " " + eStartTime,
+                // 'seType': getEclipseType(eDates)
               }
             ];
           }
@@ -394,12 +397,29 @@ class CalculateLunarEclipse {
               'Type': 'notVisible',
               'maxEclipse': gettime(el, mid),
               'peEnd': gettime(el, p4),
-              'DateTime': getdate(el, mid) + " " + gettime(el, mid)
+              'DateTime': getdate(el, mid) + " " + gettime(el, mid),
+              // 'seType': getEclipseType(eDates)
             }
           ];
         }
       }
     }
     return eclipseDates;
+  }
+
+  getEclipseType(eclipsedate) {
+    // final String response = await DefaultAssetBundle.of(context).loadString('assets/json/SElist.json');
+    DateTime inputDate = DateFormat("yyyy-MM-dd").parse(eclipsedate);
+    String formattedDate = DateFormat("MM-yyyy").format(inputDate);
+
+    List listData = LElist().getEclipseData();
+    var res = listData
+        .where((element) =>
+            DateFormat("MM-yyyy").parse(element['eclipse_date']) ==
+            formattedDate)
+        .toList();
+    // print(res);
+    // print(res);
+    return res.length > 0 ? res[0]['type'] : '-';
   }
 }

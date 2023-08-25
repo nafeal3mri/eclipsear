@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -11,6 +12,7 @@ import 'package:eclipsear/models/calc/lunareclipseCalc.dart';
 import 'package:eclipsear/models/countDownTimer.dart';
 import 'package:eclipsear/models/eclipseTypeIcon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -93,8 +95,9 @@ class _MyAppState extends State<MyApp> {
       ],
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+          primarySwatch: Colors.brown,
+          brightness: Brightness.dark,
+          fontFamily: 'Dubai'),
       home: const MyHomePage(title: 'EclipseAR'),
     );
   }
@@ -290,16 +293,17 @@ class _MyHomePageState extends State<MyHomePage>
                       context,
                       MaterialPageRoute(
                           builder: (context) => EclipseDetailsPage(
-                              title: 
-                              // AppLocalizations.of(context)!.eclipseType(
-                              //         (_controller.index == 0
-                              //                 ? "solar"
-                              //                 : "lunar") +
-                              //             listingec['Type']) +
-                              //     ' ' +
-                              
+                              title:
+                                  // AppLocalizations.of(context)!.eclipseType(
+                                  //         (_controller.index == 0
+                                  //                 ? "solar"
+                                  //                 : "lunar") +
+                                  //             listingec['Type']) +
+                                  //     ' ' +
+
                                   // listingec['date'],
-                                  getdatetimgformatted(false,listingec['date']),
+                                  getdatetimgformatted(
+                                      false, listingec['date']),
                               eclipseData: listingec,
                               eclipseType:
                                   _controller.index == 0 ? "solar" : "lunar")));
@@ -343,7 +347,7 @@ class _MyHomePageState extends State<MyHomePage>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AutoSizeText(
-                                // listingec['Type'],
+                                // listingec['seType'],
                                 AppLocalizations.of(context)!.eclipseType(
                                     (_controller.index == 0
                                             ? "solar"
@@ -377,17 +381,17 @@ class _MyHomePageState extends State<MyHomePage>
                                 : '',
                             style: TextStyle(fontSize: 14, color: Colors.white),
                           ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.width * 0.01,
-                          ),
+                          // SizedBox(
+                          //   height: MediaQuery.of(context).size.width * 0.001,
+                          // ),
                           Text(
                             AppLocalizations.of(context)!.max +
                                 ":  ${listingec['maxEclipse']}",
                             style: TextStyle(fontSize: 14, color: Colors.white),
                           ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.width * 0.01,
-                          ),
+                          // SizedBox(
+                          //   height: MediaQuery.of(context).size.width * 0.001,
+                          // ),
                           Text(
                             listingec['peEnd'] != '--:--:--'
                                 ? AppLocalizations.of(context)!.end +
@@ -450,6 +454,7 @@ class _MyHomePageState extends State<MyHomePage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AutoSizeText(
+                      // _tabdata['seType'],
                       AppLocalizations.of(context)!.eclipseType(
                           (_controller.index == 0 ? "solar" : "lunar") +
                               _tabdata['Type']),
@@ -473,7 +478,8 @@ class _MyHomePageState extends State<MyHomePage>
                         context,
                         MaterialPageRoute(
                             builder: (context) => EclipseDetailsPage(
-                                title: getdatetimgformatted(false,_tabdata['date']),
+                                title: getdatetimgformatted(
+                                    false, _tabdata['date']),
                                 eclipseData:
                                     getSelectedEclipseArray(eclipseType),
                                 eclipseType: eclipseType)));
@@ -627,10 +633,9 @@ class _MyHomePageState extends State<MyHomePage>
     }
   }
 
-  getdatetimgformatted(bool isTitle,String myDate){
+  getdatetimgformatted(bool isTitle, String myDate) {
     DateTime inputDate = DateFormat("yyyy-MM-dd").parse(myDate);
     String formattedDate = DateFormat("MMMd yyyy").format(inputDate);
-
     return formattedDate;
   }
 }

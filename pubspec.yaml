@@ -45,6 +45,11 @@ flutter:
     - assets/icons/
     - assets/eclipses/
     - assets/json/
+
+  fonts:
+    - family: Dubai
+      fonts:
+        - asset: assets/fonts/Dubai.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:

@@ -1,5 +1,5 @@
 {
-    "eclipseType": "{eclipseType, select, solarnotVisible{Not visible in your location} solartotalEclipse{Total eclipse} solarannularEclipse{Annular elipse} solarpartialEclipse{Partial eclipse} penumbralEclipse{Penumbral eclipse} lunarnotVisible{Not visible in your location} lunartotalEclipse{Total eclipse} lunarannularEclipse{Annular elipse} lunarpartialEclipse{Partial eclipse} lunarpenumbralEclipse{Penumbral eclipse} other{No data}}",
+    "eclipseType": "{eclipseType, select, solarnotVisible{Not visible in location} solartotalEclipse{Total eclipse} solarannularEclipse{Annular elipse} solarpartialEclipse{Partial eclipse} penumbralEclipse{Penumbral eclipse} lunarnotVisible{Not visible in location} lunartotalEclipse{Total eclipse} lunarannularEclipse{Annular elipse} lunarpartialEclipse{Partial eclipse} lunarpenumbralEclipse{Penumbral eclipse} other{No data}}",
     "days": "days",
     "viewMore": "View More",
     "max": "Max",

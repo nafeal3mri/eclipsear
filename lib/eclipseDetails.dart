@@ -160,7 +160,7 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage>  with SingleTic
 
   Widget buttonTabs() {
     return Container(
-        height: MediaQuery.of(context).size.height*0.1,
+        height: MediaQuery.of(context).size.height*0.07,
         width: MediaQuery.of(context).size.width * 0.8,
         child: DefaultTabController(
         length: 2,
@@ -179,7 +179,7 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage>  with SingleTic
                 // physics: const NeverScrollableScrollPhysics(),
                 controller: _controller,
                 splashColor: AppColors.darkbrown_press,
-                backgroundColor: AppColors.lightbrown,
+                backgroundColor: AppColors.darkbrown,
                 unselectedBackgroundColor: Colors.transparent,
                 unselectedLabelStyle: TextStyle(color: Colors.white),
                 contentPadding: EdgeInsets.only(right: 25, left: 25),

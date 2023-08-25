@@ -1,5 +1,8 @@
-﻿import 'dart:math' as Math;
+﻿import 'dart:convert';
+import 'dart:math' as Math;
+import 'package:eclipsear/models/calc/solarEclipse/SElist.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'solarEclipse/timeperiod.dart';
 // import 'package:location/location.dart';
@@ -959,7 +962,8 @@ class CalculateSolarEclipse {
               'maxEclipse': eMaximum,
               'peEnd': pEclipseEnd,
               'eclipseMg': getmagnitude(),
-              'DateTime': eDates + " " + eMaximum
+              'DateTime': eDates + " " + eMaximum,
+              // 'seType': getEclipseType(eDates)
             }
           ];
         }
@@ -975,7 +979,8 @@ class CalculateSolarEclipse {
               'maxEclipse': gettime(el, mid),
               'peEnd': '--:--:--',
               'eclipseMg': getmagnitude(),
-              'DateTime': getdate(el, mid) + " " + gettime(el, mid)
+              'DateTime': getdate(el, mid) + " " + gettime(el, mid),
+              // 'seType': getEclipseType(eDates)
             }
           ];
         }
@@ -983,5 +988,16 @@ class CalculateSolarEclipse {
     } //EndFor
     // print(eclipseDates);
     return eclipseDates;
+  }
+
+  getEclipseType(eclipsedate){
+    // final String response = await DefaultAssetBundle.of(context).loadString('assets/json/SElist.json');
+    DateTime inputDate = DateFormat("yyyy-MM-dd").parse(eclipsedate);
+    String formattedDate = DateFormat("dd-MM-yyyy").format(inputDate);
+
+    List listData = SElist().dataLists();
+    var res = listData.where((element) => element['eclipse_date'] == formattedDate).toList();
+    // print(res);
+    return res.length > 0 ? res[0]['type'] : '-';
   }
 }
