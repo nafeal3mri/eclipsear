@@ -1,6 +1,10 @@
 {
     "eclipseType": "{eclipseType, select, solarnotVisible{Not visible in location} solartotalEclipse{Total eclipse} solarannularEclipse{Annular elipse} solarpartialEclipse{Partial eclipse} penumbralEclipse{Penumbral eclipse} lunarnotVisible{Not visible in location} lunartotalEclipse{Total eclipse} lunarannularEclipse{Annular elipse} lunarpartialEclipse{Partial eclipse} lunarpenumbralEclipse{Penumbral eclipse} other{No data}}",
-    "days": "days",
+    "days": "Days",
+    "year": "Year",
+    "years": "Years",
+    "month": "Month",
+    "months": "Months",
     "viewMore": "View More",
     "max": "Max",
     "start": "Start",
@@ -14,6 +18,23 @@
     "selectFromMap": "Select from Map",
     "selectFromList": "Select from list",
     "eclipseDetails": "Eclipse details",
-    "viewEclipseMap": "View eclipse map"
+    "viewEclipseMap": "View eclipse map",
+    "eclipsePath": "Eclipse path",
+    "eclipseSimulation": "Eclipse simulation",
+    "ecVisibility": "{EclipseVisibility, select,  notVisibleShort{Not visible} other{Visible}}",
+    "visibility": "Visibility",
+    "eclipseTypes": "Eclipse type",
+    "date": "Date",
+    "magnitude": "Magnitude",
+    "coverage": "Coverage",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "and": "&",
+    "douration": "Douration",
+    "aboutus": "About EclipseAR",
+    "learnaboutus": "Want to know about us?",
+    "aboutuscontent": "EclipseAR is a solar/lunar eclipse calender, some sources were used to make this app \n - NASA (https://eclipse.gsfc.nasa.gov) \n - © Dominic Ford (https://in-the-sky.org) \n This app DO NOT require any spicial permissions to your phone (Except Geolocation), it's optional, you can disable it whenever you want. \n If you interested to help translate this app to your language please contact me at info@nafe.me",
+    "eclipseended": "Eclipse Ended"
+ 
 
 }

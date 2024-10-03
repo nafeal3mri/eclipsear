@@ -2,10 +2,11 @@ import 'package:eclipsear/const/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class AppBGSet extends StatefulWidget {
-  const AppBGSet({super.key, required this.topWidget, this.middleWidget = const Center(),required this.pageContent});
+  const AppBGSet({super.key, required this.topWidget, this.middleWidget = const Center(),required this.pageContent, this.bodyHasPadding = false});
   final Widget topWidget;
   final Widget middleWidget;
   final Widget pageContent;
+  final bool bodyHasPadding;
   @override
   State<AppBGSet> createState() => _AppBGSetState();
 }
@@ -35,6 +36,16 @@ class _AppBGSetState extends State<AppBGSet> with TickerProviderStateMixin {
         ),
       ),
       Container(
+        padding: EdgeInsets.all(widget.bodyHasPadding ? 0 : 10),
+        margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * (widget.bodyHasPadding ? 0.30 : 0.35)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            this.widget.pageContent
+          ],
+        ),
+      ),
+      Container(
         padding:
             EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.27),
         height: MediaQuery.of(context).size.height * 0.34,
@@ -56,7 +67,7 @@ class _AppBGSetState extends State<AppBGSet> with TickerProviderStateMixin {
         ),
       ),
       Container(
-        padding: EdgeInsets.only(top: 20),
+        padding: EdgeInsets.only(top: MediaQuery.of(context).size.height*0.002),
         height: MediaQuery.of(context).size.height * 0.26,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
@@ -74,16 +85,7 @@ class _AppBGSetState extends State<AppBGSet> with TickerProviderStateMixin {
           ],
         ),
       ),
-      Container(
-        padding: EdgeInsets.all(10),
-        margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.35),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            this.widget.pageContent
-          ],
-        ),
-      ),
+      
     ]);
   }
 }

@@ -817,14 +817,14 @@ class CalculateSolarEclipse {
       // html.appendChild(ital);
       return a;
     }
-    // if (mid[40] == 2) {
-    //   // a = "$a (r)";
-    //   a = "$a";
-    // }
-    // if (mid[40] == 3) {
-    //   // a = "$a (s)";
-    //   a = "$a";
-    // }
+    if (mid[40] == 2) {
+      a = "$a (r)";
+      a = "$a";
+    }
+    if (mid[40] == 3) {
+      a = "$a (s)";
+      a = "$a";
+    }
     return a;
   }
 
@@ -963,6 +963,8 @@ class CalculateSolarEclipse {
               'peEnd': pEclipseEnd,
               'eclipseMg': getmagnitude(),
               'DateTime': eDates + " " + eMaximum,
+              "coverage": getcoverage(),
+              "douration": getduration()
               // 'seType': getEclipseType(eDates)
             }
           ];
@@ -980,6 +982,8 @@ class CalculateSolarEclipse {
               'peEnd': '--:--:--',
               'eclipseMg': getmagnitude(),
               'DateTime': getdate(el, mid) + " " + gettime(el, mid),
+              "coverage": "",
+              "douration": ""
               // 'seType': getEclipseType(eDates)
             }
           ];

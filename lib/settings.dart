@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eclipsear/aboutUs.dart';
 import 'package:eclipsear/selectCity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -104,6 +105,37 @@ class _SettingsPage extends State<SettingsPage> {
               languageText(),
               style: TextStyle(color: Colors.white),
             ),
+            trailing: iconByDirection()),
+        Divider(),
+        ListTile(
+            onTap: () {
+               Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AboutUsPage()));
+            },
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            leading: Container(
+              padding: EdgeInsets.only(right: 12.0),
+              decoration: new BoxDecoration(
+                  border: new Border(
+                      right:
+                          new BorderSide(width: 1.0, color: Colors.white24))),
+              child: Icon(
+                Icons.favorite,
+                color: Colors.white,
+              ),
+            ),
+            title: Text(
+              AppLocalizations.of(context)!.aboutus,
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(
+              AppLocalizations.of(context)!.learnaboutus,
+              style: TextStyle(color: Colors.white),
+            ),
             trailing: iconByDirection())
       ],
     );
@@ -205,19 +237,6 @@ class _SettingsPage extends State<SettingsPage> {
     });
   }
 
-  //   getCountryName() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   final coordinates = new Coordinates(
-  //       prefs.getDouble('latitude'), prefs.getDouble('longitude'));
-  //   var addresses =
-  //       await Geocoder.local.findAddressesFromCoordinates(coordinates);
-  //   setState(() {
-  //     var first = addresses.first;
-  //     _country =
-  //         first.countryName == null ? first.addressLine : first.countryName;
-  //     _city = first.locality == null ? first.addressLine : first.locality;
-  //   });
-  // }
 
   getLocation() async {
     prefs = await SharedPreferences.getInstance();

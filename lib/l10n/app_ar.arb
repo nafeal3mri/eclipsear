@@ -1,6 +1,10 @@
 {
     "eclipseType": "{eclipseType, select, solarnotVisible{غير ظاهر في منطقتك} solartotalEclipse{كسوف كلي} solarannularEclipse{كسوف حلقي} solarpartialEclipse{كسوف جزئي}lunarnotVisible{غير ظاهر في منطقتك} lunartotalEclipse{خسوف كلي} lunarannularEclipse{خسوف حلقي} lunarpartialEclipse{خسوف جزئي} lunarpenumbralEclipse{خسوف شبه الظل} other{لا يوجد بيانات}}",
     "days": "يوم",
+    "year": "سنة",
+    "years": "سنوات",
+    "month": "شهر",
+    "months": "أشهر",
     "viewMore": "عرض المزيد",
     "max": "ذروة الكسوف",
     "start": "بداية الكسوف",
@@ -14,6 +18,22 @@
     "selectFromMap": "اختر من خريطة",
     "selectFromList": "اختر من قائمة",
     "eclipseDetails": "تفاصيل الكسوف",
-    "viewEclipseMap": "استعرض خريطة الكسوف"
+    "viewEclipseMap": "استعرض خريطة الكسوف",
+    "eclipsePath": "مسار الكسوف",
+    "eclipseSimulation": "محاكاة الكسوف",
+    "ecVisibility": "{EclipseVisibility, select,  notVisibleShort{غير ممكنة} other{ممكنة}}",
+    "visibility": "امكانية المشاهدة",
+    "eclipseTypes": "نوع الكسوف",
+    "date": "التاريخ",
+    "magnitude": "حجم الكسوف",
+    "coverage": "التغطية",
+    "hours": "ساعة",
+    "minutes": "دقيقة",
+    "and": "و",
+    "douration": "المدة",
+    "aboutus": "عن EclipseAR",
+    "learnaboutus": "تعرف علينا :)",
+    "aboutuscontent": "تطبيق EclipseAR هو تطبيق لحساب مواعيد خسوف القمر وكسوف الشمس, تم برمجة هذا التطبيق بالاستعانة ببعض المصادر \n - NASA (https://eclipse.gsfc.nasa.gov) \n - © Dominic Ford (https://in-the-sky.org) \n لا يطلب هذا التطبيق اي اذونات خاصة عدا أذونات اختيارية (الموقع الجغرافي) يمكنك تفعيلها والغاء تفعيلها في أي وقت \n تابعني على منصات التواصل الاجتماعي Twitter - snapchat - Instagram @nafe_al3mri \n If you interested to help translate this app to your language please contact me at info@nafe.me",
+    "eclipseended": "انتهى الكسوف"
 
 }

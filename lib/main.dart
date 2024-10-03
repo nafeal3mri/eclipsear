@@ -16,8 +16,11 @@ import 'package:flutter/services.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+
+import 'models/dateFormatter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -131,17 +134,19 @@ class _MyHomePageState extends State<MyHomePage>
   var _annual_list;
   late SharedPreferences prefs;
   bool is_loading = true;
+  late bool _serviceEnabled;
 
   @override
   void initState() {
     super.initState();
     _controller = TabController(vsync: this, length: 2);
     _controller.addListener(() {
-      databyyear("", 2023);
+      databyyear("", _yearActive);
       setState(() {});
     });
     // iosnotificationpermission();
     // getLunarEclipseData();
+    askUserLocation();
     getEclipseData();
   }
 
@@ -238,10 +243,10 @@ class _MyHomePageState extends State<MyHomePage>
             right: MediaQuery.of(context).size.width * 0.1,
             left: MediaQuery.of(context).size.width * 0.1),
         child: ListView.builder(
-            itemCount: generateButtonsYears(limit: 10).length,
+            itemCount: generateButtonsYears(limit: 0).length,
             scrollDirection: Axis.horizontal,
             itemBuilder: (BuildContext context, int index) {
-              int yearbtn = generateButtonsYears()[index];
+              int yearbtn = generateButtonsYears(limit: 0)[index];
               return Container(
                   margin: EdgeInsets.only(
                       right: MediaQuery.of(context).size.width * 0.01,
@@ -302,7 +307,7 @@ class _MyHomePageState extends State<MyHomePage>
                                   //     ' ' +
 
                                   // listingec['date'],
-                                  getdatetimgformatted(
+                                  DateFormatter().getdatetimgformatted(
                                       false, listingec['date']),
                               eclipseData: listingec,
                               eclipseType:
@@ -362,7 +367,9 @@ class _MyHomePageState extends State<MyHomePage>
                                     MediaQuery.of(context).size.width * 0.01,
                               ),
                               Text(
-                                listingec['date'],
+                                DateFormatter().getdatetimgformatted(
+                                    false, listingec['date'],
+                                    dateFormat: "d MMMM yyyy"),
                                 style: TextStyle(
                                     fontSize: 14, color: Colors.white),
                               ),
@@ -461,6 +468,13 @@ class _MyHomePageState extends State<MyHomePage>
                       style: TextStyle(color: Colors.white, fontSize: 18),
                       maxLines: 1,
                     ),
+                    // AutoSizeText(
+                    //   DateFormatter().getdatetimgformatted(
+                    //       false, _tabdata['date'],
+                    //       dateFormat: "d MMMM yyyy"),
+                    //   style: TextStyle(color: Colors.white, fontSize: 14),
+                    //   maxLines: 1,
+                    // ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -474,14 +488,15 @@ class _MyHomePageState extends State<MyHomePage>
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    var selected_ec_data = getSelectedEclipseArray(eclipseType);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => EclipseDetailsPage(
-                                title: getdatetimgformatted(
-                                    false, _tabdata['date']),
+                                title: DateFormatter().getdatetimgformatted(
+                                    false, selected_ec_data['date']),
                                 eclipseData:
-                                    getSelectedEclipseArray(eclipseType),
+                                    selected_ec_data,
                                 eclipseType: eclipseType)));
                   },
                   style: ElevatedButton.styleFrom(
@@ -633,9 +648,28 @@ class _MyHomePageState extends State<MyHomePage>
     }
   }
 
-  getdatetimgformatted(bool isTitle, String myDate) {
-    DateTime inputDate = DateFormat("yyyy-MM-dd").parse(myDate);
-    String formattedDate = DateFormat("MMMd yyyy").format(inputDate);
-    return formattedDate;
+  askUserLocation() async {
+    Location location = new Location();
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
   }
+
+  
 }
