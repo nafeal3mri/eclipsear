@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="bloodMoon" cx="38%" cy="34%" r="66%">
+      <stop offset="0%"   stop-color="#FF6040"/>
+      <stop offset="35%"  stop-color="#CC1800"/>
+      <stop offset="75%"  stop-color="#800A00"/>
+      <stop offset="100%" stop-color="#3A0200"/>
+    </radialGradient>
+    <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="52%"  stop-color="#AA1000" stop-opacity="0"/>
+      <stop offset="70%"  stop-color="#CC2200" stop-opacity="0.45"/>
+      <stop offset="88%"  stop-color="#AA1000" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#660A00" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Subtle crater-like texture via lighter spots -->
+    <radialGradient id="crater1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#FF8060" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#FF8060" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Blood-moon glow -->
+  <circle cx="100" cy="100" r="96" fill="url(#moonGlow)"/>
+
+  <!-- Moon disk (blood red) -->
+  <circle cx="100" cy="100" r="68" fill="url(#bloodMoon)"/>
+
+  <!-- Subtle surface highlights (craters) -->
+  <circle cx="82"  cy="80"  r="10" fill="url(#crater1)"/>
+  <circle cx="118" cy="65"  r="7"  fill="url(#crater1)"/>
+  <circle cx="110" cy="118" r="12" fill="url(#crater1)"/>
+  <circle cx="72"  cy="115" r="8"  fill="url(#crater1)"/>
+
+  <!-- Limb rim -->
+  <circle cx="100" cy="100" r="68" fill="none" stroke="#FF5030" stroke-width="2" stroke-opacity="0.60"/>
+</svg>

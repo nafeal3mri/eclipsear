@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#FFF5B0"/>
+      <stop offset="30%"  stop-color="#FFD700"/>
+      <stop offset="62%"  stop-color="#FF9500"/>
+      <stop offset="100%" stop-color="#FF5500"/>
+    </radialGradient>
+    <radialGradient id="outerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="58%"  stop-color="#FF7000" stop-opacity="0"/>
+      <stop offset="76%"  stop-color="#FF7000" stop-opacity="0.38"/>
+      <stop offset="100%" stop-color="#FF3300" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="moonDark" cx="38%" cy="34%" r="65%">
+      <stop offset="0%"   stop-color="#181826"/>
+      <stop offset="100%" stop-color="#040409"/>
+    </radialGradient>
+    <!-- Inner bright rim gradient -->
+    <radialGradient id="rimGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="50%"  stop-color="#FFE860" stop-opacity="0"/>
+      <stop offset="70%"  stop-color="#FFE860" stop-opacity="0.85"/>
+      <stop offset="76%"  stop-color="#FFB340" stop-opacity="0.55"/>
+      <stop offset="84%"  stop-color="#FF9500" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Atmosphere glow -->
+  <circle cx="100" cy="100" r="96" fill="url(#outerGlow)"/>
+
+  <!-- Golden sun disk -->
+  <circle cx="100" cy="100" r="72" fill="url(#sunGrad)"/>
+
+  <!-- Ring-of-fire inner glow -->
+  <circle cx="100" cy="100" r="72" fill="url(#rimGlow)"/>
+
+  <!-- Dark moon (smaller, centered) -->
+  <circle cx="100" cy="100" r="53" fill="url(#moonDark)"/>
+
+  <!-- Bright ring edges for realism -->
+  <circle cx="100" cy="100" r="53" fill="none" stroke="#FFE870" stroke-width="4.5" stroke-opacity="0.90"/>
+  <circle cx="100" cy="100" r="72" fill="none" stroke="#FF9500" stroke-width="3.0" stroke-opacity="0.55"/>
+</svg>

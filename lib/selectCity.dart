@@ -2,7 +2,7 @@
 import 'package:eclipsear/models/geocoding.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:eclipsear/l10n/app_localizations.dart';
 import 'const/app_bar.dart';
 import 'const/app_colors.dart';
 
@@ -29,7 +29,6 @@ class _SelectCityPageState extends State<SelectCityPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // titleSpacing: 5,
         elevation: 0,
         backgroundColor: AppColors.darkbrown,
         title: CustomAppBar(
@@ -38,8 +37,6 @@ class _SelectCityPageState extends State<SelectCityPage> {
           viewLocation: false,
           showsettingsbtn: false,
         ),
-        // backgroundColor: Color.fromARGB(255, 69, 56, 125),
-        // title: Text(AppLocalizations.of(context)!.settings),
       ),
       body: Center(
         child: Container(
@@ -145,17 +142,14 @@ class _SelectCityPageState extends State<SelectCityPage> {
                         setNewUserLocation();
                       },
                       style: ElevatedButton.styleFrom(
-                        // foregroundColor: AppColors.darkbrown_press,
+                        foregroundColor: Colors.white,
                         backgroundColor: AppColors.lightbrown,
                         side: BorderSide(
-                          color: AppColors
-                              .darkbrown, // Set the border color to white
-                          width: 1.0, // Set the border width
+                          color: AppColors.lightbrown,
+                          width: 1.0,
                         ),
-
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              20.0), // Adjust the border radius as needed
+                          borderRadius: BorderRadius.circular(20.0),
                         ),
                       ),
                       child: Text(AppLocalizations.of(context)!.setLocation),

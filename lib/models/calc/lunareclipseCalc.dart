@@ -299,6 +299,7 @@ class CalculateLunarEclipse {
 
 // CALCULATE!
   List<Map<String, dynamic>> calculatefor(lat, lng, alt) {
+    eclipseDates = [];
     readform(lat, lng, alt);
     final timeper = TimePeriods();
     var el = timeper.le2001();
