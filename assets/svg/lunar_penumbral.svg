@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="moonFull" cx="40%" cy="36%" r="66%">
+      <stop offset="0%"   stop-color="#F0E8D8"/>
+      <stop offset="40%"  stop-color="#C8C0A8"/>
+      <stop offset="100%" stop-color="#888070"/>
+    </radialGradient>
+    <radialGradient id="penumbra" cx="60%" cy="55%" r="55%">
+      <stop offset="0%"   stop-color="#181828" stop-opacity="0"/>
+      <stop offset="60%"  stop-color="#181828" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#181828" stop-opacity="0.55"/>
+    </radialGradient>
+    <radialGradient id="lunarGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="52%"  stop-color="#556699" stop-opacity="0"/>
+      <stop offset="74%"  stop-color="#445577" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#334466" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="crater1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#F0E8D0" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#F0E8D0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Subtle glow -->
+  <circle cx="100" cy="100" r="96" fill="url(#lunarGlow)"/>
+
+  <!-- Full moon -->
+  <circle cx="100" cy="100" r="66" fill="url(#moonFull)"/>
+
+  <!-- Subtle craters -->
+  <circle cx="84"  cy="82"  r="10" fill="url(#crater1)"/>
+  <circle cx="116" cy="68"  r="7"  fill="url(#crater1)"/>
+  <circle cx="108" cy="116" r="11" fill="url(#crater1)"/>
+  <circle cx="74"  cy="112" r="7"  fill="url(#crater1)"/>
+  <circle cx="122" cy="108" r="5"  fill="url(#crater1)"/>
+
+  <!-- Penumbral shadow (subtle edge darkening) -->
+  <circle cx="100" cy="100" r="66" fill="url(#penumbra)"/>
+
+  <!-- Limb -->
+  <circle cx="100" cy="100" r="66" fill="none" stroke="#C0B8A4" stroke-width="1.5" stroke-opacity="0.55"/>
+</svg>

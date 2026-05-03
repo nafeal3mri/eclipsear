@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="sunPartial" cx="40%" cy="38%" r="65%">
+      <stop offset="0%"   stop-color="#FFF8D0"/>
+      <stop offset="35%"  stop-color="#FFD700"/>
+      <stop offset="100%" stop-color="#FF8C00"/>
+    </radialGradient>
+    <radialGradient id="moonShadow" cx="38%" cy="35%" r="62%">
+      <stop offset="0%"   stop-color="#141424"/>
+      <stop offset="100%" stop-color="#04040D"/>
+    </radialGradient>
+    <radialGradient id="glowPartial" cx="50%" cy="50%" r="50%">
+      <stop offset="52%"  stop-color="#FF9000" stop-opacity="0"/>
+      <stop offset="72%"  stop-color="#FF9000" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#FF5500" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Clip to sun circle -->
+    <clipPath id="sunClip">
+      <circle cx="100" cy="100" r="65"/>
+    </clipPath>
+  </defs>
+
+  <!-- Outer glow -->
+  <circle cx="100" cy="100" r="96" fill="url(#glowPartial)"/>
+
+  <!-- Sun disk (golden crescent) -->
+  <circle cx="100" cy="100" r="65" fill="url(#sunPartial)"/>
+
+  <!-- Moon shadow overlapping sun (~55% coverage) -->
+  <circle cx="128" cy="96" r="65" fill="url(#moonShadow)" clip-path="url(#sunClip)"/>
+
+  <!-- Sun bright limb rim -->
+  <circle cx="100" cy="100" r="65" fill="none" stroke="#FFD870" stroke-width="1.8" stroke-opacity="0.75"/>
+  <!-- Moon dark limb rim (subtle) -->
+  <circle cx="128" cy="96" r="65" fill="none" stroke="#303050" stroke-width="1.2" stroke-opacity="0.5" clip-path="url(#sunClip)"/>
+</svg>

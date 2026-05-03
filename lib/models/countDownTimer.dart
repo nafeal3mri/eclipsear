@@ -1,13 +1,20 @@
 import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:eclipsear/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 class CountdownTimer extends StatefulWidget {
   final DateTime targetDate;
+  final TextStyle? textStyle;
+  final int? maxLines;
 
-  CountdownTimer({required this.targetDate});
+  const CountdownTimer({
+    super.key,
+    required this.targetDate,
+    this.textStyle,
+    this.maxLines,
+  });
 
   @override
   _CountdownTimerState createState() => _CountdownTimerState();
@@ -73,10 +80,10 @@ class _CountdownTimerState extends State<CountdownTimer> {
   Widget build(BuildContext context) {
     return AutoSizeText(
       _formatDuration(_duration),
-      style: TextStyle(fontSize: 20,color: Colors.white),
+      style: widget.textStyle ?? const TextStyle(fontSize: 20, color: Colors.white),
       maxFontSize: 25,
-      minFontSize: 15,
-      maxLines: 2,
+      minFontSize: 12,
+      maxLines: widget.maxLines ?? 2,
     );
   }
 }

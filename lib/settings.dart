@@ -1,247 +1,385 @@
-import 'dart:convert';
+import 'dart:ui';
 
-import 'package:eclipsear/aboutUs.dart';
-import 'package:eclipsear/selectCity.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:http/http.dart' as http;
-import 'changeLocationMap.dart';
-import 'const/app_bar.dart';
-import 'const/app_colors.dart';
-import 'main.dart';
+import 'package:eclipsear/l10n/app_localizations.dart';
+import 'package:eclipsear/main.dart';
+import 'package:eclipsear/aboutUs.dart';
+import 'package:eclipsear/changeLocationMap.dart';
 
 class SettingsPage extends StatefulWidget {
-  SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
+
   @override
-  _SettingsPage createState() => _SettingsPage();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsPage extends State<SettingsPage> {
-  String _city = '';
-  late SharedPreferences prefs;
+class _SettingsPageState extends State<SettingsPage> {
+  String _cityName     = '';
+  String _languageCode = 'en';
+
+  static const _bg = [
+    Color(0xFF080604),
+    Color(0xFF120E0A),
+    Color(0xFF1A1510),
+  ];
+  static const _accent     = Color(0xFFC49A6C);
+  static const _accentText = Color(0xFFD4A878);
+
   @override
   void initState() {
-    getLocation();
     super.initState();
+    _loadPrefs();
   }
+
+  Future<void> _loadPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _cityName     = prefs.getString('cityname') ?? '';
+      _languageCode = prefs.getString('language')  ?? 'en';
+    });
+  }
+
+  // ── Build ──────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Scaffold(
-      extendBodyBehindAppBar: false,
-      appBar: AppBar(
-        // titleSpacing: 5,
-        elevation: 0,
-        backgroundColor: AppColors.darkbrown,
-        title: CustomAppBar(
-          pageTitle: AppLocalizations.of(context)!.settings,
-          viewLogo: false,
-          viewLocation: false,
-          showsettingsbtn: false,
+      backgroundColor: Colors.transparent,
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: _bg,
+            stops: [0.0, 0.38, 1.0],
+          ),
         ),
-        // backgroundColor: Color.fromARGB(255, 69, 56, 125),
-        // title: Text(AppLocalizations.of(context)!.settings),
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildNavBar(context, loc),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+                  children: [
+                    // ── Location section
+                    _sectionLabel(loc.location),
+                    _tile(
+                      icon:     Icons.location_on_rounded,
+                      title:    loc.location,
+                      subtitle: _cityName.isNotEmpty ? _cityName : '—',
+                      onTap:    _showLocationSheet,
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // ── Preferences section
+                    _sectionLabel(loc.sectionPreferences),
+                    _tile(
+                      icon:     Icons.language_rounded,
+                      title:    loc.language,
+                      subtitle: _languageCode == 'ar' ? 'العربية' : 'English',
+                      onTap:    _showLanguageSheet,
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // ── App section
+                    _sectionLabel(loc.sectionApp),
+                    _tile(
+                      icon:     Icons.favorite_rounded,
+                      title:    loc.aboutus,
+                      subtitle: loc.learnaboutus,
+                      onTap:    () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => AboutUsPage()),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      backgroundColor: AppColors.lightbrown10,
-      body: settingsBody(),
     );
   }
 
-  Widget settingsBody() {
-    return Column(
+  // ── Nav bar ────────────────────────────────────────────────────────────────
+
+  Widget _buildNavBar(BuildContext context, AppLocalizations loc) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 8, 20, 4),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.08),
+              ),
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Colors.white.withOpacity(0.80),
+                size: 18,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            loc.settings,
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.88),
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Shared widgets ─────────────────────────────────────────────────────────
+
+  Widget _sectionLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 8),
+      child: Text(
+        text.toUpperCase(),
+        style: TextStyle(
+          color: _accentText.withOpacity(0.50),
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.4,
+        ),
+      ),
+    );
+  }
+
+  Widget _tile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    final isRTL = Localizations.localeOf(context).languageCode == 'ar';
+
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              color: Colors.white.withOpacity(0.055),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.09),
+                width: 0.8,
+              ),
+            ),
+            child: Row(
+              children: [
+                // Icon pill
+                Container(
+                  padding: const EdgeInsets.all(9),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _accent.withOpacity(0.15),
+                    border: Border.all(
+                      color: _accent.withOpacity(0.30),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Icon(icon, color: _accentText, size: 18),
+                ),
+                const SizedBox(width: 14),
+
+                // Text
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.45),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Chevron
+                Icon(
+                  isRTL
+                      ? Icons.chevron_left_rounded
+                      : Icons.chevron_right_rounded,
+                  color: Colors.white.withOpacity(0.28),
+                  size: 22,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Bottom sheets ──────────────────────────────────────────────────────────
+
+  void _showLocationSheet() {
+    final loc = AppLocalizations.of(context)!;
+    _showSheet(
       children: [
-        ListTile(
-            onTap: () {
-              showbottommodal();
-            },
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-            leading: Container(
-              padding: EdgeInsets.only(right: 12.0),
-              decoration: new BoxDecoration(
-                  border: new Border(
-                      right:
-                          new BorderSide(width: 1.0, color: Colors.white24))),
-              child: Icon(
-                Icons.gps_fixed,
-                color: Colors.white,
-              ),
-            ),
-            title: Text(
-              AppLocalizations.of(context)!.location,
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(_city,
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
-            trailing: iconByDirection()),
-        Divider(),
-        ListTile(
-            onTap: () {
-              changeLanguage();
-            },
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-            leading: Container(
-              padding: EdgeInsets.only(right: 12.0),
-              decoration: new BoxDecoration(
-                  border: new Border(
-                      right:
-                          new BorderSide(width: 1.0, color: Colors.white24))),
-              child: Icon(
-                Icons.language,
-                color: Colors.white,
-              ),
-            ),
-            title: Text(
-              AppLocalizations.of(context)!.language,
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              languageText(),
-              style: TextStyle(color: Colors.white),
-            ),
-            trailing: iconByDirection()),
-        Divider(),
-        ListTile(
-            onTap: () {
-               Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AboutUsPage()));
-            },
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-            leading: Container(
-              padding: EdgeInsets.only(right: 12.0),
-              decoration: new BoxDecoration(
-                  border: new Border(
-                      right:
-                          new BorderSide(width: 1.0, color: Colors.white24))),
-              child: Icon(
-                Icons.favorite,
-                color: Colors.white,
-              ),
-            ),
-            title: Text(
-              AppLocalizations.of(context)!.aboutus,
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              AppLocalizations.of(context)!.learnaboutus,
-              style: TextStyle(color: Colors.white),
-            ),
-            trailing: iconByDirection())
+        _sheetOption(
+          icon:  Icons.map_rounded,
+          label: loc.selectFromMap,
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ChangeLocationPage()),
+            ).then((_) => _loadPrefs());
+          },
+        ),
       ],
     );
   }
 
-  Widget iconByDirection() {
-    return Localizations.localeOf(context).languageCode == 'ar'
-        ? Icon(Icons.keyboard_arrow_left, color: Colors.white, size: 30.0)
-        : Icon(Icons.keyboard_arrow_right, color: Colors.white, size: 30.0);
+  void _showLanguageSheet() {
+    _showSheet(
+      children: [
+        _sheetOption(
+          label:   'العربية',
+          leading: const Text('AR',
+              style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700)),
+          onTap: () {
+            Navigator.pop(context);
+            _setLanguage('ar');
+          },
+        ),
+        _sheetOption(
+          label:   'English',
+          leading: const Text('EN',
+              style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700)),
+          onTap: () {
+            Navigator.pop(context);
+            _setLanguage('en');
+          },
+        ),
+      ],
+    );
   }
 
-  String languageText() {
-    return Localizations.localeOf(context).languageCode == 'ar'
-        ? 'العربية'
-        : 'English';
-  }
-
-  showbottommodal() {
+  void _showSheet({required List<Widget> children}) {
     showModalBottomSheet(
-        backgroundColor: AppColors.lightbrown15,
-        context: context,
-        builder: (context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: new Icon(
-                  Icons.map,
-                  color: Colors.white,
-                ),
-                title: new Text(
-                  AppLocalizations.of(context)!.selectFromMap,
-                  style: TextStyle(color: Colors.white),
-                ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ChangeLocationPage()));
-                },
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return ClipRRect(
+          borderRadius:
+              const BorderRadius.vertical(top: Radius.circular(28)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+              decoration: BoxDecoration(
+                color: const Color(0xFF120E0A).withOpacity(0.95),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(28)),
+                border: Border.all(
+                    color: Colors.white.withOpacity(0.09), width: 0.7),
               ),
-              // ListTile(
-              //   leading: new Icon(Icons.flag, color: Colors.white),
-              //   title: new Text(AppLocalizations.of(context)!.selectFromList,
-              //       style: TextStyle(color: Colors.white)),
-              //       onTap: () {
-              //         Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //             builder: (context) => SelectCityPage()));
-              //       },
-              // ),
-            ],
-          );
-        });
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Handle
+                  Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.20),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ...children,
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
-  changeLanguage() {
-    showModalBottomSheet(
-        backgroundColor: AppColors.lightbrown15,
-        context: context,
-        builder: (context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: Text("AR", style: TextStyle(color: Colors.white)),
-                title: Text('العربية', style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.pop(context);
-                  setLanguage('ar');
-                },
-              ),
-              ListTile(
-                leading: Text(
-                  "EN",
-                  style: TextStyle(color: Colors.white),
-                ),
-                title: Text(
-                  'English',
-                  style: TextStyle(color: Colors.white),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  setLanguage('en');
-                },
-              ),
-            ],
-          );
-        });
+  Widget _sheetOption({
+    IconData? icon,
+    Widget? leading,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: Colors.white.withOpacity(0.06),
+          border:
+              Border.all(color: Colors.white.withOpacity(0.08), width: 0.7),
+        ),
+        child: Row(
+          children: [
+            leading ??
+                Icon(icon ?? Icons.circle, color: _accentText, size: 20),
+            const SizedBox(width: 14),
+            Text(
+              label,
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  setLanguage(lang) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('language', lang).then((value) {
-      // Locale.fromSubtags(languageCode: 'en');
-      MyApp.of(context)!.setLocale(Locale.fromSubtags(
-          languageCode: prefs.getString("language") ?? "en"));
-    });
-  }
+  // ── Logic ──────────────────────────────────────────────────────────────────
 
-
-  getLocation() async {
-    prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _city = prefs.getString('cityname') ?? '-';
-    });
+  Future<void> _setLanguage(String lang) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('language', lang);
+    if (!mounted) return;
+    setState(() => _languageCode = lang);
+    EclipsearApp.of(context)
+        ?.setLocale(Locale.fromSubtags(languageCode: lang));
   }
 }

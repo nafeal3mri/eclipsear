@@ -873,6 +873,7 @@ class CalculateSolarEclipse {
 // CALCULATE!
 
   List<Map<String, dynamic>> calculatefor(lat, lng, alt) {
+    eclipseDates = [];
     final timeper = TimePeriods();
     var el = timeper.se2001();
     var eDates, eStartTime, ecType, eMaximum, pEclipseEnd;

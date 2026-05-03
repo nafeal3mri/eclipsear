@@ -8,9 +8,9 @@ class AppColors {
   static Color reddanger = const Color(0xFFAE373D);
   static Color darkgreen = const Color(0xFF0D544F);
   static Color lightbluebg = const Color(0xFFF4F7FA);
-  static Color darkbrown = const Color(0xFF2F2727);
-  static Color darkbrown_press = Color.fromARGB(255, 74, 60, 60);
-  static Color lightbrown = const Color(0xFF705D5D);
-  static Color lightbrown10 = Color.fromARGB(182, 112, 93, 93);
-  static Color lightbrown15 = Color.fromARGB(182, 94, 92, 92);
+  static Color darkbrown = const Color(0xFF120E0A);
+  static Color darkbrown_press = const Color(0xFF1A1510);
+  static Color lightbrown = const Color(0xFFC49A6C);
+  static Color lightbrown10 = const Color(0xFFB08860);
+  static Color lightbrown15 = const Color(0xFFA08878);
 }
