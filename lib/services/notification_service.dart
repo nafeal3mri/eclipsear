@@ -65,7 +65,7 @@ class NotificationService {
     await _plugin.cancel(id: _lunarDayBefore);
     await _plugin.cancel(id: _lunarStart);
 
-    if (nextSolar != null && nextSolar['Type'] != 'notVisible') {
+    if (nextSolar != null) {
       await _scheduleForEclipse(
         eclipse: nextSolar,
         label: 'Solar',
@@ -75,7 +75,7 @@ class NotificationService {
       );
     }
 
-    if (nextLunar != null && nextLunar['Type'] != 'notVisible') {
+    if (nextLunar != null) {
       await _scheduleForEclipse(
         eclipse: nextLunar,
         label: 'Lunar',

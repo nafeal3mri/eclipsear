@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:eclipsear/l10n/app_localizations.dart';
@@ -17,10 +15,8 @@ void main() async {
   if (prefs.containsKey('language')) {
     userLanguage = Locale(prefs.getString('language') ?? 'en');
   } else {
-    final systemLocale = Platform.localeName.toString();
-    userLanguage = Locale(
-      (systemLocale == 'ar' || systemLocale == 'en') ? systemLocale : 'en',
-    );
+    // Default to English until the user selects a language in Settings.
+    userLanguage = const Locale('en');
   }
 
   // Show welcome screen on first launch (no stored location yet).
@@ -72,6 +68,10 @@ class _EclipsearAppState extends State<EclipsearApp> {
       supportedLocales: const [
         Locale('ar'),
         Locale('en'),
+        Locale('es'),
+        Locale('ru'),
+        Locale('zh'),
+        Locale('ja'),
       ],
       theme: ThemeData(
         brightness: Brightness.dark,

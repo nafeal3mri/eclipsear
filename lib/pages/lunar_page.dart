@@ -620,24 +620,6 @@ class _LunarYearSelector extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(width: 8),
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.white.withOpacity(0.04),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.08),
-                width: 0.8,
-              ),
-            ),
-            child: Icon(
-              Icons.tune_rounded,
-              color: Colors.white.withOpacity(0.40),
-              size: 18,
-            ),
-          ),
         ],
       ),
     );

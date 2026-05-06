@@ -7,7 +7,10 @@ import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:eclipsear/changeLocationMap.dart';
+import 'package:eclipsear/main.dart';
+import 'package:eclipsear/models/geocoding.dart';
 import 'package:eclipsear/pages/home_page.dart';
+import 'package:eclipsear/l10n/app_localizations.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  WELCOME / ONBOARDING PAGE
@@ -25,6 +28,9 @@ class _WelcomePageState extends State<WelcomePage>
   final _pageController = PageController();
   int _currentPage = 0;
 
+  // Language step
+  String _languageCode = 'en';
+
   // Location step
   bool _locLoading = false;
   String? _locError;
@@ -41,6 +47,8 @@ class _WelcomePageState extends State<WelcomePage>
   void initState() {
     super.initState();
 
+    _loadLanguagePref();
+
     _fadeCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
@@ -53,6 +61,24 @@ class _WelcomePageState extends State<WelcomePage>
     )..repeat(reverse: true);
     _pulseAnim = Tween<double>(begin: 1.0, end: 1.08)
         .animate(CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
+  }
+
+  Future<void> _loadLanguagePref() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _languageCode =
+          prefs.getString('language') ?? Localizations.localeOf(context).languageCode;
+      if (_languageCode.isEmpty) _languageCode = 'en';
+    });
+  }
+
+  Future<void> _setLanguage(String lang) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('language', lang);
+    if (!mounted) return;
+    setState(() => _languageCode = lang);
+    EclipsearApp.of(context)?.setLocale(Locale.fromSubtags(languageCode: lang));
   }
 
   @override
@@ -114,10 +140,27 @@ class _WelcomePageState extends State<WelcomePage>
       final ld = await location.getLocation()
           .timeout(const Duration(seconds: 12));
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setDouble('latitude',  ld.latitude  ?? 0);
-      await prefs.setDouble('longitude', ld.longitude ?? 0);
+      final lat = ld.latitude ?? 0;
+      final lon = ld.longitude ?? 0;
+      await prefs.setDouble('latitude',  lat);
+      await prefs.setDouble('longitude', lon);
       await prefs.setDouble('altitude',  ld.altitude  ?? 0);
       await prefs.setString('location_source', 'gps');
+
+      // Persist a friendly city name for the home top bar.
+      try {
+        final geo = await GeoCoding().getCityFromLatlng(lat, lon);
+        final country = geo['country'] as String? ?? '';
+        final city = geo['city'] as String? ?? '';
+
+        final displayName = city.isNotEmpty
+            ? (country.isNotEmpty ? '$city, $country' : city)
+            : country.isNotEmpty
+                ? country
+                : '${lat.toStringAsFixed(3)}, ${lon.toStringAsFixed(3)}';
+
+        await prefs.setString('cityname', displayName);
+      } catch (_) {}
 
       if (!mounted) return;
       _goToHome();
@@ -172,18 +215,39 @@ class _WelcomePageState extends State<WelcomePage>
   // ── Slide 1 — Welcome ──────────────────────────────────────────────────────
 
   Widget _buildSlide1() {
+    final loc = AppLocalizations.of(context)!;
     return SafeArea(
       child: Column(
         children: [
           const SizedBox(height: 60),
 
-          // Pulsing eclipse icon
+          // Pulsing app icon
           ScaleTransition(
             scale: _pulseAnim,
-            child: _GlowIcon(
-              asset:     'assets/svg/solar_partial.svg',
-              size:      140,
-              glowColor: const Color(0xFFA07850),
+            child: Container(
+              width: 140,
+              height: 140,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFA07850).withOpacity(0.40),
+                    blurRadius: 60,
+                    spreadRadius: 8,
+                  ),
+                  BoxShadow(
+                    color: const Color(0xFFA07850).withOpacity(0.18),
+                    blurRadius: 100,
+                    spreadRadius: 20,
+                  ),
+                ],
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/icons/eclipsearlogo.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
 
@@ -203,7 +267,7 @@ class _WelcomePageState extends State<WelcomePage>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
-              'Your personal guide to every\nsolar & lunar eclipse on Earth',
+              loc.welcomeTagline,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color:    Colors.white.withOpacity(0.60),
@@ -213,14 +277,51 @@ class _WelcomePageState extends State<WelcomePage>
             ),
           ),
 
-          const SizedBox(height: 48),
+          const SizedBox(height: 22),
 
-          // Feature chips
-          _FeatureRow(chips: const [
-            _FeatureChip(icon: Icons.wb_sunny_rounded,     label: 'Solar Eclipses'),
-            _FeatureChip(icon: Icons.nightlight_round,     label: 'Lunar Eclipses'),
-            _FeatureChip(icon: Icons.timer_outlined,       label: 'Countdown'),
-          ]),
+          // Language buttons
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 26),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                _LanguageButton(
+                  label: 'English',
+                  code: 'en',
+                  selected: _languageCode == 'en',
+                  onTap: () => _setLanguage('en'),
+                ),
+                _LanguageButton(
+                  label: 'العربية',
+                  code: 'ar',
+                  selected: _languageCode == 'ar',
+                  onTap: () => _setLanguage('ar'),
+                ),
+                _LanguageButton(
+                  label: 'Español',
+                  code: 'es',
+                  selected: _languageCode == 'es',
+                  onTap: () => _setLanguage('es'),
+                ),
+                _LanguageButton(
+                  label: 'Русский',
+                  code: 'ru',
+                  selected: _languageCode == 'ru',
+                  onTap: () => _setLanguage('ru'),
+                ),
+                _LanguageButton(
+                  label: '中文',
+                  code: 'zh',
+                  selected: _languageCode == 'zh',
+                  onTap: () => _setLanguage('zh'),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 26),
         ],
       ),
     );
@@ -229,6 +330,7 @@ class _WelcomePageState extends State<WelcomePage>
   // ── Slide 2 — Features ────────────────────────────────────────────────────
 
   Widget _buildSlide2() {
+    final loc = AppLocalizations.of(context)!;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -238,7 +340,7 @@ class _WelcomePageState extends State<WelcomePage>
             const SizedBox(height: 70),
 
             Text(
-              'What you\'ll see',
+              loc.welcomeSlide2Title,
               style: TextStyle(
                 color:      Colors.white.withOpacity(0.90),
                 fontSize:   28,
@@ -247,7 +349,7 @@ class _WelcomePageState extends State<WelcomePage>
             ),
             const SizedBox(height: 6),
             Text(
-              'Everything about every eclipse,\njust for your location.',
+              loc.welcomeSlide2Subtitle,
               style: TextStyle(
                 color:  Colors.white.withOpacity(0.45),
                 fontSize: 14,
@@ -264,7 +366,7 @@ class _WelcomePageState extends State<WelcomePage>
                     asset:      'assets/svg/solar_annular.svg',
                     glowColor:  const Color(0xFFC49A6C),
                     title:      'Solar Eclipses',
-                    body:       'Total, annular & partial — see type, path and countdown',
+                    body:       loc.welcomeFeatureSolarBody,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -273,7 +375,7 @@ class _WelcomePageState extends State<WelcomePage>
                     asset:      'assets/svg/lunar_total.svg',
                     glowColor:  const Color(0xFFBB7755),
                     title:      'Lunar Eclipses',
-                    body:       'Blood moon, penumbral & more — never miss a lunar event',
+                    body:       loc.welcomeFeatureLunarBody,
                   ),
                 ),
               ],
@@ -282,19 +384,10 @@ class _WelcomePageState extends State<WelcomePage>
             const SizedBox(height: 16),
 
             _WideFeatureCard(
-              iconData:  Icons.wb_cloudy_outlined,
-              accentColor: const Color(0xFFB08860),
-              title:     'Historical Weather',
-              body:      'See the weather forecast from last year on the eclipse date so you can plan ahead.',
-            ),
-
-            const SizedBox(height: 16),
-
-            _WideFeatureCard(
               iconData:  Icons.map_outlined,
               accentColor: const Color(0xFFA08878),
-              title:     'Eclipse Path Map',
-              body:      'View the full path of totality on an interactive map.',
+              title:     loc.welcomeFeatureMap,
+              body:      loc.welcomeFeatureMapBody,
             ),
           ],
         ),
@@ -305,6 +398,7 @@ class _WelcomePageState extends State<WelcomePage>
   // ── Slide 3 — Location ────────────────────────────────────────────────────
 
   Widget _buildSlide3() {
+    final loc = AppLocalizations.of(context)!;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 28),
@@ -339,9 +433,9 @@ class _WelcomePageState extends State<WelcomePage>
 
             const SizedBox(height: 28),
 
-            const Text(
-              'Set your location',
-              style: TextStyle(
+            Text(
+              loc.welcomeSlide3Title,
+              style: const TextStyle(
                 color:      Colors.white,
                 fontSize:   26,
                 fontWeight: FontWeight.w700,
@@ -350,7 +444,7 @@ class _WelcomePageState extends State<WelcomePage>
             const SizedBox(height: 10),
 
             Text(
-              'EclipseAR needs your location to calculate\neclipse visibility, type, and timing\nspecifically for where you are.',
+              loc.welcomeSlide3Body,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color:  Colors.white.withOpacity(0.50),
@@ -365,7 +459,7 @@ class _WelcomePageState extends State<WelcomePage>
             SizedBox(
               width: double.infinity,
               child: _PrimaryButton(
-                label:    'Use GPS',
+                label:    loc.welcomeUseGPS,
                 icon:     Icons.gps_fixed_rounded,
                 loading:  _locLoading,
                 onTap:    _useGPS,
@@ -378,7 +472,7 @@ class _WelcomePageState extends State<WelcomePage>
             SizedBox(
               width: double.infinity,
               child: _SecondaryButton(
-                label: 'Pick on Map',
+                label: loc.welcomePickOnMap,
                 icon:  Icons.map_outlined,
                 onTap: _pickOnMap,
               ),
@@ -401,7 +495,7 @@ class _WelcomePageState extends State<WelcomePage>
             GestureDetector(
               onTap: _goToHome,
               child: Text(
-                'Skip for now',
+                loc.welcomeSkip,
                 style: TextStyle(
                   color:    Colors.white.withOpacity(0.30),
                   fontSize: 13,
@@ -521,85 +615,6 @@ class _StarPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter old) => false;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  GLOW ICON  (wraps any SVG asset with a bloom shadow)
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _GlowIcon extends StatelessWidget {
-  final String asset;
-  final double size;
-  final Color  glowColor;
-  const _GlowIcon({required this.asset, required this.size, required this.glowColor});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(color: glowColor.withOpacity(0.40), blurRadius: 60, spreadRadius: 8),
-          BoxShadow(color: glowColor.withOpacity(0.18), blurRadius: 100, spreadRadius: 20),
-        ],
-      ),
-      child: SvgPicture.asset(asset, width: size, height: size),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  FEATURE ROW (Slide 1 chips)
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _FeatureChip {
-  final IconData icon;
-  final String   label;
-  const _FeatureChip({required this.icon, required this.label});
-}
-
-class _FeatureRow extends StatelessWidget {
-  final List<_FeatureChip> chips;
-  const _FeatureRow({required this.chips});
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      alignment:   WrapAlignment.center,
-      spacing:     10,
-      runSpacing:  10,
-      children: chips.map((c) => _chip(c)).toList(),
-    );
-  }
-
-  Widget _chip(_FeatureChip c) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color:        Colors.white.withOpacity(0.06),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.12),
-          width: 0.8,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(c.icon, color: const Color(0xFFD4A878), size: 15),
-          const SizedBox(width: 7),
-          Text(
-            c.label,
-            style: TextStyle(
-              color:    Colors.white.withOpacity(0.75),
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -849,6 +864,65 @@ class _SecondaryButton extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LanguageButton extends StatelessWidget {
+  final String label;
+  final String code;
+  final bool selected;
+  final VoidCallback onTap;
+  const _LanguageButton({
+    required this.label,
+    required this.code,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = const Color(0xFFD4A878);
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? accent.withOpacity(0.20) : Colors.white.withOpacity(0.06),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: selected ? accent.withOpacity(0.55) : Colors.white.withOpacity(0.12),
+            width: 0.9,
+          ),
+          boxShadow: selected
+              ? [BoxShadow(color: accent.withOpacity(0.18), blurRadius: 18)]
+              : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              code.toUpperCase(),
+              style: TextStyle(
+                color: selected ? accent : Colors.white.withOpacity(0.60),
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.6,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: Colors.white.withOpacity(selected ? 0.95 : 0.78),
+                fontSize: 13,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ),
     );

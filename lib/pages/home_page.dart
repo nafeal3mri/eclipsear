@@ -9,6 +9,7 @@ import 'package:eclipsear/services/notification_service.dart';
 import 'package:eclipsear/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:location/location.dart';
+import 'package:eclipsear/models/geocoding.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -112,10 +113,25 @@ class _HomePageState extends State<HomePage> {
 
       final ld = await location.getLocation()
           .timeout(const Duration(seconds: 10));
-      await prefs.setDouble('latitude',  ld.latitude  ?? 0);
-      await prefs.setDouble('longitude', ld.longitude ?? 0);
+      final lat = ld.latitude ?? 0;
+      final lon = ld.longitude ?? 0;
+      await prefs.setDouble('latitude',  lat);
+      await prefs.setDouble('longitude', lon);
       await prefs.setDouble('altitude',  ld.altitude  ?? 0);
       await prefs.setString('location_source', 'gps');
+
+      // Keep the UI city name in sync with GPS refresh.
+      try {
+        final geo = await GeoCoding().getCityFromLatlng(lat, lon);
+        final country = geo['country'] as String? ?? '';
+        final city = geo['city'] as String? ?? '';
+        final displayName = city.isNotEmpty
+            ? (country.isNotEmpty ? '$city, $country' : city)
+            : country.isNotEmpty
+                ? country
+                : '${lat.toStringAsFixed(3)}, ${lon.toStringAsFixed(3)}';
+        await prefs.setString('cityname', displayName);
+      } catch (_) {}
 
       await _loadEclipseData();
     } catch (_) {}

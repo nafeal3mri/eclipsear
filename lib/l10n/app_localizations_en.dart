@@ -268,8 +268,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get typeNotVisible => 'Not visible';
 
   @override
-  String get welcomeTagline =>
-      'Your personal guide to every solar & lunar eclipse on Earth';
+  String get welcomeTagline => 'Select language';
 
   @override
   String get welcomeChipCountdown => 'Countdown';
@@ -318,4 +317,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get welcomeSkip => 'Skip for now';
+
+  @override
+  String get addReminder => 'Add reminder';
+
+  @override
+  String get share => 'Share';
 }

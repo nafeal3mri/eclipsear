@@ -82,7 +82,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     _tile(
                       icon:     Icons.language_rounded,
                       title:    loc.language,
-                      subtitle: _languageCode == 'ar' ? 'العربية' : 'English',
+                      subtitle: switch (_languageCode) {
+                        'ar' => 'العربية',
+                        'es' => 'Español',
+                        'ja' => '日本語',
+                        'ru' => 'Русский',
+                        'zh' => '中文',
+                        _ => 'English',
+                      },
                       onTap:    _showLanguageSheet,
                     ),
 
@@ -283,6 +290,18 @@ class _SettingsPageState extends State<SettingsPage> {
           },
         ),
         _sheetOption(
+          label:   'Español',
+          leading: const Text('ES',
+              style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700)),
+          onTap: () {
+            Navigator.pop(context);
+            _setLanguage('es');
+          },
+        ),
+        _sheetOption(
           label:   'English',
           leading: const Text('EN',
               style: TextStyle(
@@ -292,6 +311,42 @@ class _SettingsPageState extends State<SettingsPage> {
           onTap: () {
             Navigator.pop(context);
             _setLanguage('en');
+          },
+        ),
+        _sheetOption(
+          label:   '日本語',
+          leading: const Text('JA',
+              style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700)),
+          onTap: () {
+            Navigator.pop(context);
+            _setLanguage('ja');
+          },
+        ),
+        _sheetOption(
+          label:   'Русский',
+          leading: const Text('RU',
+              style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700)),
+          onTap: () {
+            Navigator.pop(context);
+            _setLanguage('ru');
+          },
+        ),
+        _sheetOption(
+          label:   '中文',
+          leading: const Text('ZH',
+              style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700)),
+          onTap: () {
+            Navigator.pop(context);
+            _setLanguage('zh');
           },
         ),
       ],

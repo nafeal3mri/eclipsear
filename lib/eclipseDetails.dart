@@ -167,20 +167,7 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
 
   Future<void> _setReminder() async {
     final loc = AppLocalizations.of(context)!;
-    final type = widget.eclipseData['Type'] as String? ?? 'notVisible';
     final theme = _theme;
-
-    if (type == 'notVisible') {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(loc.eclipseNotVisible),
-          backgroundColor: Colors.white.withOpacity(0.15),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-      return;
-    }
 
     final dateStr = widget.eclipseData['date'] as String? ?? '';
     final timeStr = widget.eclipseData['Time'] as String? ?? '';
@@ -607,14 +594,6 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
       child: Row(
         children: [
           _infoCard(
-            icon: Icons.wb_cloudy_outlined,
-            title: 'Weather',
-            primary: 'Check forecast',
-            secondary: 'for eclipse day',
-            theme: theme,
-          ),
-          const SizedBox(width: 8),
-          _infoCard(
             icon: Icons.visibility_outlined,
             title: loc.visibility,
             primary: visibilityValue,
@@ -688,6 +667,7 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
   // ── Bottom Action Buttons ─────────────────────────────────────────────────
 
   Widget _buildBottomButtons(EclipseTheme theme) {
+    final loc = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
       child: Row(
@@ -715,7 +695,7 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Add reminder',
+                      loc.addReminder,
                       style: TextStyle(
                         color: theme.textAccentColor,
                         fontSize: 14,
@@ -751,7 +731,7 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Share',
+                      loc.share,
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.65),
                         fontSize: 14,

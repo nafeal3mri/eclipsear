@@ -73,7 +73,7 @@
     "typePartial": "Partial",
     "typePenumbral": "Penumbral",
     "typeNotVisible": "Not visible",
-    "welcomeTagline": "Your personal guide to every solar & lunar eclipse on Earth",
+    "welcomeTagline": "Select language",
     "welcomeChipCountdown": "Countdown",
     "welcomeSlide2Title": "What you'll see",
     "welcomeSlide2Subtitle": "Everything about every eclipse, just for your location.",
@@ -87,5 +87,7 @@
     "welcomeSlide3Body": "EclipseAR needs your location to calculate eclipse visibility, type, and timing specifically for where you are.",
     "welcomeUseGPS": "Use GPS",
     "welcomePickOnMap": "Pick on Map",
-    "welcomeSkip": "Skip for now"
+    "welcomeSkip": "Skip for now",
+    "addReminder": "Add reminder",
+    "share": "Share"
 }

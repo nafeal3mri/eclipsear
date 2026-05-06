@@ -264,8 +264,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get typeNotVisible => 'غير مرئي';
 
   @override
-  String get welcomeTagline =>
-      'دليلك الشخصي لكل كسوف شمسي وخسوف قمري على الأرض';
+  String get welcomeTagline => 'اختر اللغة';
 
   @override
   String get welcomeChipCountdown => 'العد التنازلي';
@@ -313,4 +312,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get welcomeSkip => 'تخطي الآن';
+
+  @override
+  String get addReminder => 'إضافة تذكير';
+
+  @override
+  String get share => 'مشاركة';
 }

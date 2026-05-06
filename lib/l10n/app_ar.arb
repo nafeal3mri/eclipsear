@@ -73,7 +73,7 @@
     "typePartial": "جزئي",
     "typePenumbral": "شبه ظلي",
     "typeNotVisible": "غير مرئي",
-    "welcomeTagline": "دليلك الشخصي لكل كسوف شمسي وخسوف قمري على الأرض",
+    "welcomeTagline": "اختر اللغة",
     "welcomeChipCountdown": "العد التنازلي",
     "welcomeSlide2Title": "ما ستشاهده",
     "welcomeSlide2Subtitle": "كل شيء عن كل كسوف، خصيصاً لموقعك.",
@@ -87,5 +87,7 @@
     "welcomeSlide3Body": "يحتاج EclipseAR إلى موقعك لحساب إمكانية مشاهدة الكسوف ونوعه وتوقيته بدقة لمكان وجودك.",
     "welcomeUseGPS": "استخدم GPS",
     "welcomePickOnMap": "اختر على الخريطة",
-    "welcomeSkip": "تخطي الآن"
+    "welcomeSkip": "تخطي الآن",
+    "addReminder": "إضافة تذكير",
+    "share": "مشاركة"
 }
