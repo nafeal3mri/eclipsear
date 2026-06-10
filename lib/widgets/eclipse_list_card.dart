@@ -28,7 +28,7 @@ class EclipseListCard extends StatelessWidget {
     final mag  = EclipseTheme.parseMagnitude(eclipseData['eclipseMg']);
 
     final dateStr = DateFormatter().getdatetimgformatted(
-      false, eclipseData['date'], dateFormat: 'd MMM yyyy',
+      false, eclipseData['date'], dateFormat: 'd MMMM yyyy', locale: loc.localeName,
     );
     final typeName = loc.eclipseType(eclipseCategory + type);
 

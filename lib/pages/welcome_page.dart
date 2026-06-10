@@ -317,6 +317,12 @@ class _WelcomePageState extends State<WelcomePage>
                   selected: _languageCode == 'zh',
                   onTap: () => _setLanguage('zh'),
                 ),
+                _LanguageButton(
+                  label: '日本語',
+                  code: 'ja',
+                  selected: _languageCode == 'ja',
+                  onTap: () => _setLanguage('ja'),
+                ),
               ],
             ),
           ),

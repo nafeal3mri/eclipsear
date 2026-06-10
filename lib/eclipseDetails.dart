@@ -14,6 +14,7 @@ import 'package:eclipsear/models/dateFormatter.dart';
 
 import 'package:eclipsear/models/videoPlayer.dart';
 import 'package:eclipsear/services/notification_service.dart';
+import 'package:eclipsear/widgets/location_pin.dart';
 
 import 'package:video_player/video_player.dart';
 
@@ -44,6 +45,7 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
   bool _videoError = false;
 
   String _userCity = '';
+  LatLng? _userPoint;
 
   @override
   void initState() {
@@ -61,9 +63,13 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
 
   Future<void> _loadUserLocation() async {
     final prefs = await SharedPreferences.getInstance();
+    final lat = prefs.getDouble('latitude');
+    final lon = prefs.getDouble('longitude');
     if (!mounted) return;
     setState(() {
       _userCity = prefs.getString('cityname') ?? '';
+      _userPoint =
+          (lat != null && lon != null) ? LatLng(lat, lon) : null;
     });
   }
 
@@ -127,7 +133,7 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
     final categoryName = isSolar ? loc.solarEclipse : loc.lunarEclipse;
     final dateStr = DateFormatter().getdatetimgformatted(
       false, widget.eclipseData['date'],
-      dateFormat: 'MMMM d, yyyy',
+      dateFormat: 'd MMMM yyyy', locale: loc.localeName,
     );
     final startTime = _fmt(widget.eclipseData['Time']);
     final maxTime = _fmt(widget.eclipseData['maxEclipse']);
@@ -325,7 +331,7 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
     final categoryName = widget.eclipseType == 'solar' ? loc.solarEclipse : loc.lunarEclipse;
     final dateStr = DateFormatter().getdatetimgformatted(
       false, widget.eclipseData['date'],
-      dateFormat: 'MMM d, yyyy',
+      dateFormat: 'd MMMM yyyy', locale: loc.localeName,
     );
 
     String coverageStr = '';
@@ -753,6 +759,13 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
     final center = hasPath && _pathData.centerLine.isNotEmpty
         ? _pathData.centerLine[_pathData.centerLine.length ~/ 2]
         : const LatLng(0, 0);
+    final contours = [
+      _mercatorSafePolarContour(_pathData.contour1),
+      _mercatorSafePolarContour(_pathData.contour2),
+      _mercatorSafePolarContour(_pathData.contour3),
+      _mercatorSafePolarContour(_pathData.contour4),
+      _mercatorSafePolarContour(_pathData.contour5),
+    ];
 
     return FlutterMap(
       mapController: _mapController,
@@ -771,33 +784,111 @@ class _EclipseDetailsPageState extends State<EclipseDetailsPage> {
           userAgentPackageName: 'me.nafe.eclipsear',
           maxZoom: 18,
         ),
-        if (_pathData.contour5.length > 2)
+        if (contours[4].length > 2)
           PolygonLayer(polygons: [
-            Polygon(points: _pathData.contour5, color: theme.accentColor.withOpacity(0.08), borderStrokeWidth: 0),
+            Polygon(points: contours[4], color: theme.accentColor.withOpacity(0.08), borderStrokeWidth: 0),
           ]),
-        if (_pathData.contour4.length > 2)
+        if (contours[3].length > 2)
           PolygonLayer(polygons: [
-            Polygon(points: _pathData.contour4, color: theme.accentColor.withOpacity(0.12), borderStrokeWidth: 0),
+            Polygon(points: contours[3], color: theme.accentColor.withOpacity(0.12), borderStrokeWidth: 0),
           ]),
-        if (_pathData.contour3.length > 2)
+        if (contours[2].length > 2)
           PolygonLayer(polygons: [
-            Polygon(points: _pathData.contour3, color: theme.accentColor.withOpacity(0.18), borderStrokeWidth: 0),
+            Polygon(points: contours[2], color: theme.accentColor.withOpacity(0.18), borderStrokeWidth: 0),
           ]),
-        if (_pathData.contour2.length > 2)
+        if (contours[1].length > 2)
           PolygonLayer(polygons: [
-            Polygon(points: _pathData.contour2, color: theme.accentColor.withOpacity(0.26), borderStrokeWidth: 0),
+            Polygon(points: contours[1], color: theme.accentColor.withOpacity(0.26), borderStrokeWidth: 0),
           ]),
-        if (_pathData.contour1.length > 2)
+        if (contours[0].length > 2)
           PolygonLayer(polygons: [
-            Polygon(points: _pathData.contour1, color: theme.accentColor.withOpacity(0.36), borderStrokeWidth: 0),
+            Polygon(points: contours[0], color: theme.accentColor.withOpacity(0.36), borderStrokeWidth: 0),
           ]),
         if (_pathData.centerLine.length > 1)
           PolylineLayer(polylines: [
             Polyline(points: _pathData.centerLine, color: theme.accentColor, strokeWidth: 2.5),
           ]),
+        // User's saved location (set in settings)
+        if (_userPoint != null)
+          MarkerLayer(markers: [
+            Marker(
+              point: _userPoint!,
+              width: 56,
+              height: 56,
+              child: LocationPin(color: theme.accentColor),
+            ),
+          ]),
         const RichAttributionWidget(attributions: [TextSourceAttribution('© CartoDB  © OpenStreetMap')]),
       ],
     );
+  }
+
+  /// Routes odd antimeridian crossings through the nearest Mercator pole.
+  ///
+  /// Polar contours enclose a pole and therefore cross the ±180° seam an odd
+  /// number of times. Without this bridge, PolygonLayer draws each crossing
+  /// directly across the map as a horizontal band.
+  List<LatLng> _mercatorSafePolarContour(List<LatLng> points) {
+    if (points.length < 3) return points;
+
+    const mercatorLimit = 85.0511287798;
+    final crossingCount = List.generate(points.length, (i) {
+      final next = points[(i + 1) % points.length];
+      return (next.longitude - points[i].longitude).abs() > 180;
+    }).where((crosses) => crosses).length;
+
+    double clampLatitude(double latitude) =>
+        latitude.clamp(-mercatorLimit, mercatorLimit).toDouble();
+
+    if (!crossingCount.isOdd) {
+      return points
+          .map((point) => LatLng(
+                clampLatitude(point.latitude),
+                point.longitude,
+              ))
+          .toList();
+    }
+
+    final maxLatitude =
+        points.map((point) => point.latitude).reduce((a, b) => a > b ? a : b);
+    final minLatitude =
+        points.map((point) => point.latitude).reduce((a, b) => a < b ? a : b);
+    final poleLatitude =
+        90 - maxLatitude <= 90 + minLatitude ? mercatorLimit : -mercatorLimit;
+    final result = <LatLng>[];
+
+    for (var i = 0; i < points.length; i++) {
+      final current = points[i];
+      final next = points[(i + 1) % points.length];
+      result.add(LatLng(
+        clampLatitude(current.latitude),
+        current.longitude,
+      ));
+
+      var adjustedNextLongitude = next.longitude;
+      final rawDelta = adjustedNextLongitude - current.longitude;
+      final crossesAntimeridian = rawDelta.abs() > 180;
+      if (rawDelta > 180) adjustedNextLongitude -= 360;
+      if (rawDelta < -180) adjustedNextLongitude += 360;
+
+      final adjustedDelta = adjustedNextLongitude - current.longitude;
+      if (!crossesAntimeridian) continue;
+
+      final edgeLongitude = adjustedDelta > 0 ? 180.0 : -180.0;
+      final fraction =
+          (edgeLongitude - current.longitude) / adjustedDelta;
+      final edgeLatitude = clampLatitude(
+        current.latitude + (next.latitude - current.latitude) * fraction,
+      );
+
+      result
+        ..add(LatLng(edgeLatitude, edgeLongitude))
+        ..add(LatLng(poleLatitude, edgeLongitude))
+        ..add(LatLng(poleLatitude, -edgeLongitude))
+        ..add(LatLng(edgeLatitude, -edgeLongitude));
+    }
+
+    return result;
   }
 
   Widget _loadingOverlay(EclipseTheme theme) {

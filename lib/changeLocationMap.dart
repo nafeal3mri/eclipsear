@@ -8,6 +8,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:eclipsear/l10n/app_localizations.dart';
 import 'package:eclipsear/main.dart';
+import 'package:eclipsear/widgets/location_pin.dart';
 
 class ChangeLocationPage extends StatefulWidget {
   const ChangeLocationPage({super.key});
@@ -113,7 +114,7 @@ class _ChangeLocationPageState extends State<ChangeLocationPage>
         onTap:         (_, latLng) => _handleTap(latLng),
       ),
       children: [
-        // Dark CartoDB tiles
+        // Includes country borders, country names, and city labels.
         TileLayer(
           urlTemplate:
               'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
@@ -129,7 +130,7 @@ class _ChangeLocationPageState extends State<ChangeLocationPage>
                 point:  _selectedPoint!,
                 width:  56,
                 height: 56,
-                child:  _LocationPin(color: _accent),
+                child:  LocationPin(color: _accent),
               ),
             ],
           ),
@@ -137,7 +138,7 @@ class _ChangeLocationPageState extends State<ChangeLocationPage>
         // Attribution
         const RichAttributionWidget(
           attributions: [
-            TextSourceAttribution('© CartoDB  © OpenStreetMap'),
+            TextSourceAttribution('© CARTO  © OpenStreetMap contributors'),
           ],
         ),
       ],
@@ -194,13 +195,7 @@ class _ChangeLocationPageState extends State<ChangeLocationPage>
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      Text(
-                        'Tap anywhere on the map',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.38),
-                          fontSize: 11,
-                        ),
-                      ),
+                      
                     ],
                   ),
                 ),
@@ -423,47 +418,6 @@ class _ChangeLocationPageState extends State<ChangeLocationPage>
         ),
       ),
       (_) => false,
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Custom pin widget
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _LocationPin extends StatelessWidget {
-  final Color color;
-  const _LocationPin({required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color,
-            boxShadow: [
-              BoxShadow(
-                color: color.withOpacity(0.50),
-                blurRadius: 14,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: const Icon(Icons.my_location_rounded,
-              color: Colors.white, size: 18),
-        ),
-        // Stem
-        Container(
-          width: 2,
-          height: 10,
-          color: color,
-        ),
-      ],
     );
   }
 }

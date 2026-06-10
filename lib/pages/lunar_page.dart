@@ -231,7 +231,7 @@ class _LunarHeroCardState extends State<_LunarHeroCard> {
     final typeName = loc.eclipseType('${widget.eclipseCategory}$type');
     final dateStr = DateFormatter().getdatetimgformatted(
       false, widget.nextEclipse['date'],
-      dateFormat: 'MMMM d, yyyy',
+      dateFormat: 'd MMMM yyyy', locale: loc.localeName,
     );
 
     final days = _remaining.isNegative ? 0 : _remaining.inDays;
@@ -650,7 +650,7 @@ class _LunarEclipseListTile extends StatelessWidget {
     final typeName = loc.eclipseType('$eclipseCategory$type');
     final dateStr = DateFormatter().getdatetimgformatted(
       false, eclipseData['date'],
-      dateFormat: 'MMM d, yyyy',
+      dateFormat: 'd MMMM yyyy', locale: loc.localeName,
     );
 
     return GestureDetector(

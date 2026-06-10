@@ -168,7 +168,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get simulationUnavailable => 'この食のシミュレーションはありません';
 
   @override
-  String get simulationAttribution => 'Simulation © Dominic Ford / in-the-sky.org';
+  String get simulationAttribution =>
+      'Simulation © Dominic Ford / in-the-sky.org';
 
   @override
   String get noUpcomingSolarEclipse => '今後の日食データがありません';
@@ -192,13 +193,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get past => '過去';
 
   @override
-  String daysAbbr(Object count) => '${count}日';
+  String daysAbbr(Object count) {
+    return '$count日';
+  }
 
   @override
-  String monthsAbbr(Object count) => '${count}か月';
+  String monthsAbbr(Object count) {
+    return '$countか月';
+  }
 
   @override
-  String yearsAbbr(Object count) => '${count}年';
+  String yearsAbbr(Object count) {
+    return '$count年';
+  }
 
   @override
   String get nextEclipse => '次の食';
@@ -285,15 +292,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get welcomeFeatureMap => '食の経路マップ';
 
   @override
-  String get welcomeFeatureMapBody =>
-      '皆既帯の経路をインタラクティブな地図で確認できます。';
+  String get welcomeFeatureMapBody => '皆既帯の経路をインタラクティブな地図で確認できます。';
 
   @override
   String get welcomeSlide3Title => '場所を設定';
 
   @override
-  String get welcomeSlide3Body =>
-      'EclipseAR は、あなたの場所に基づいて可視性、種類、時刻を計算します。';
+  String get welcomeSlide3Body => 'EclipseAR は、あなたの場所に基づいて可視性、種類、時刻を計算します。';
 
   @override
   String get welcomeUseGPS => 'GPS を使用';
@@ -310,4 +315,3 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get share => '共有';
 }
-
